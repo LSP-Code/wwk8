@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Event Eligibility Check</title>
+    <title>The Naughty List - Eligibility Check</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -23,6 +23,7 @@
             text-align: center;
             color: #2c3e50;
             margin-bottom: 5px;
+            text-transform: uppercase;
         }
         p.subtitle {
             text-align: center;
@@ -54,6 +55,7 @@
             border-radius: 8px;
             display: flex;
             flex-direction: column;
+            border-left: 5px solid #e74c3c;
         }
         .student-name {
             font-weight: bold;
@@ -70,31 +72,31 @@
             font-weight: 600;
             color: #7f8c8d;
         }
-        .no-results {
+        .eligible-msg {
             text-align: center;
-            color: #95a5a6;
-            margin-top: 20px;
-        }
-        .highlight {
-            background-color: #f1c40f;
+            padding: 20px;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            border-radius: 8px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Event Check-In</h2>
-    <p class="subtitle">Search your name to see your assigned location</p>
+    <h2>The Naughty List</h2>
+    <p class="subtitle">Search your name. If you aren't on here, you can go!</p>
     
-    <input type="text" id="searchBar" placeholder="Type student name..." onkeyup="searchStudents()">
+    <input type="text" id="searchBar" placeholder="Search your name..." onkeyup="searchList()">
 
     <div id="results" class="results-container">
         </div>
 </div>
 
 <script>
-    // The dataset parsed from your list
-    const students = [
+    const naughtyList = [
         { name: "Adams, Matthew", reason: "Attendance/Rooney", loc: "Sholes 320" },
         { name: "Aguilera, Jean", reason: "Discipline", loc: "Caman 318" },
         { name: "Amendolia, Julius", reason: "Rooney/Mullen", loc: "Lock 327" },
@@ -105,7 +107,7 @@
         { name: "Baker, Mackenzie", reason: "Attendance", loc: "Garrison 304" },
         { name: "Baldwin, Blake", reason: "Discipline", loc: "Skinner 306" },
         { name: "Ball, Graeyson", reason: "Attendance", loc: "Garrison 304" },
-        { name: "Bell, Courtney", reason: "Attendance/Rooney/Shumate", loc: "Sholes 320" },
+        { name: "Bell, Courtney", reason: "Attendance /Rooney/Shumate", loc: "Sholes 320" },
         { name: "Boone, Amira", reason: "Attendance", loc: "Garrison 304" },
         { name: "Bouterse, Dominic", reason: "Mullen", loc: "Mulford 311" },
         { name: "Bradwell, Jaycob", reason: "Discipline/Rooney", loc: "Skinner 306" },
@@ -269,17 +271,21 @@
         { name: "Wright, Bronson", reason: "Discipline", loc: "Skinner 306" }
     ];
 
-    function searchStudents() {
-        const input = document.getElementById('searchBar').value.toLowerCase();
+    function searchList() {
+        const input = document.getElementById('searchBar').value.trim().toLowerCase();
         const resultsDiv = document.getElementById('results');
         resultsDiv.innerHTML = '';
 
-        if (input.length < 2) return; // Don't search until 2 chars typed
+        if (input.length < 2) return;
 
-        const filtered = students.filter(s => s.name.toLowerCase().includes(input));
+        const filtered = naughtyList.filter(s => s.name.toLowerCase().includes(input));
 
         if (filtered.length === 0) {
-            resultsDiv.innerHTML = '<div class="no-results">No student found. If you aren\'t on this list, check with the main office.</div>';
+            resultsDiv.innerHTML = `
+                <div class="eligible-msg">
+                    ✅ YOU ARE ELIGIBLE TO GO!<br>
+                    Your name is NOT on the list.
+                </div>`;
             return;
         }
 
