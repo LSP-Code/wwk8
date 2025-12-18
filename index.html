@@ -43,7 +43,7 @@
 
         /* Hero Section */
         .welcome-area {
-            padding: 80px 20px;
+            padding: 60px 20px;
             text-align: center;
             background: var(--white);
             border-bottom: 3px solid var(--primary);
@@ -57,7 +57,7 @@
 
         .welcome-area p {
             color: #555;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             max-width: 600px;
             margin: 10px auto 0;
         }
@@ -65,18 +65,18 @@
         /* App Grid Layout */
         .app-grid {
             max-width: 1200px;
-            margin: 50px auto;
+            margin: 40px auto;
             padding: 0 25px;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
+            gap: 25px;
         }
 
         /* App Cards */
         .app-card {
             background: var(--white);
             border-radius: 20px;
-            padding: 40px 30px;
+            padding: 35px 25px;
             text-align: center;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 1px solid #e0e0e0;
@@ -86,38 +86,39 @@
         }
 
         .app-card:hover {
-            transform: translateY(-10px);
+            transform: translateY(-8px);
             box-shadow: var(--shadow);
             border-color: var(--primary);
         }
 
         .icon-box {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
+            font-size: 3rem;
+            margin-bottom: 15px;
         }
 
         .app-card h3 {
-            margin: 0 0 15px 0;
-            font-size: 1.5rem;
+            margin: 0 0 10px 0;
+            font-size: 1.4rem;
             color: var(--dark);
         }
 
         .app-card p {
             color: #666;
-            font-size: 1rem;
-            margin-bottom: 25px;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            flex-grow: 1;
         }
 
-        /* Buttons that open in New Tab */
+        /* Buttons */
         .launch-btn {
             background-color: var(--primary);
             color: var(--dark);
             text-decoration: none;
-            padding: 14px 20px;
+            padding: 12px 20px;
             border-radius: 12px;
             font-weight: bold;
-            font-size: 1rem;
-            transition: background 0.2s, transform 0.1s;
+            font-size: 0.95rem;
+            transition: all 0.2s;
             border: 2px solid var(--primary);
         }
 
@@ -128,15 +129,15 @@
         }
 
         .launch-btn:active {
-            transform: scale(0.95);
+            transform: scale(0.96);
         }
 
         /* Footer */
         footer {
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px 20px;
             color: #888;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         @media (max-width: 600px) {
@@ -150,12 +151,12 @@
 
     <nav>
         <div class="logo">🐝 STUDENT HUB</div>
-        <div style="font-size: 0.9rem; opacity: 0.8;">Portal v1.0</div>
+        <div style="font-size: 0.8rem; opacity: 0.8; font-weight: bold;">PORTAL</div>
     </nav>
 
     <div class="welcome-area">
-        <h1>Central Student Hub</h1>
-        <p>Your one-stop shop for school tools, events, and resources.</p>
+        <h1>Student Resource Center</h1>
+        <p>Access your school tools in one place.</p>
     </div>
 
     <main class="app-grid">
@@ -164,25 +165,25 @@
             <div>
                 <div class="icon-box">🎟️</div>
                 <h3>Sting Fest</h3>
-                <p>Verify your eligibility and see if you're cleared for the upcoming event.</p>
+                <p>Verify your eligibility and requirements for the upcoming event.</p>
             </div>
             <a href="https://wwk8.xyz/stingfest" class="launch-btn" target="_blank" rel="noopener noreferrer">Check Eligibility</a>
         </div>
 
         <div class="app-card">
             <div>
-                <div class="icon-box">📋</div>
-                <h3>GPA Calculator</h3>
-                <p>Track your semester progress and calculate your cumulative average.</p>
+                <div class="icon-box">📅</div>
+                <h3>Schedule App</h3>
+                <p>View your class rotations, bell times, and daily schedule info.</p>
             </div>
-            <a href="#" class="launch-btn">Coming Soon</a>
+            <a href="https://wwk8.xyz/schedule" class="launch-btn" target="_blank" rel="noopener noreferrer">View Schedule</a>
         </div>
 
         <div class="app-card">
             <div>
-                <div class="icon-box">📅</div>
-                <h3>School Calendar</h3>
-                <p>Never miss a holiday, early release, or school-wide assembly.</p>
+                <div class="icon-box">📋</div>
+                <h3>GPA Tracker</h3>
+                <p>Keep track of your grades and calculate your semester average.</p>
             </div>
             <a href="#" class="launch-btn">Coming Soon</a>
         </div>
@@ -190,7 +191,7 @@
     </main>
 
     <footer>
-        <p>Developed independently for the student body.</p>
+        <p>Created by students for the hive.</p>
         <p>&copy; 2025 wwk8.xyz</p>
     </footer>
 
