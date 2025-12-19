@@ -43,7 +43,7 @@
         #dashboard {
             height: calc(100vh - 35px);
             overflow-y: auto;
-            padding-bottom: 40px;
+            padding-bottom: 60px;
         }
 
         header {
@@ -56,7 +56,7 @@
 
         .hero-banner {
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px 20px;
         }
 
         .hero-banner h1 { font-family: 'Impact', sans-serif; font-size: 2.5rem; letter-spacing: 2px; }
@@ -80,7 +80,7 @@
 
         .card-icon { font-size: 50px; margin-bottom: 20px; display: block; }
         .card-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 12px; }
-        .card-desc { color: var(--text-gray); font-size: 0.95rem; margin-bottom: 30px; }
+        .card-desc { color: var(--text-gray); font-size: 0.95rem; margin-bottom: 30px; line-height: 1.4; }
 
         .btn-yellow {
             background: var(--primary-yellow);
@@ -92,6 +92,7 @@
             font-weight: 900;
             cursor: pointer;
             text-transform: capitalize;
+            font-size: 1rem;
         }
 
         /* --- Fullscreen Overlays --- */
@@ -114,7 +115,7 @@
         }
 
         .back-btn {
-            margin: 45px 20px 20px 20px; /* Space for the red banner */
+            margin: 45px 20px 20px 20px;
             background: rgba(255,255,255,0.1);
             border: none;
             color: white;
@@ -125,7 +126,6 @@
             align-self: flex-start;
         }
 
-        /* --- Empty State Content --- */
         .no-data-view {
             flex: 1;
             display: flex;
@@ -144,13 +144,28 @@
             font-size: 0.7rem;
             margin-bottom: 10px;
             font-weight: bold;
+            text-transform: uppercase;
         }
 
         .huge-text {
             font-family: 'Impact', sans-serif;
-            font-size: 2rem;
+            font-size: 2.2rem;
             color: var(--primary-yellow);
             text-transform: uppercase;
+        }
+
+        .profile-placeholder {
+            width: 150px;
+            height: 150px;
+            background: #222;
+            border: 3px solid var(--primary-yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 60px;
+            opacity: 0.5;
         }
     </style>
 </head>
@@ -163,7 +178,7 @@
     <div id="dashboard">
         <header>
             <div style="font-weight: 900; color: var(--primary-yellow);">WWK8 YELLOW JACKETS</div>
-            <div style="font-size: 0.7rem; color: var(--text-gray);">v0.9.0-BETA</div>
+            <div style="font-size: 0.7rem; color: var(--text-gray);">v0.9.6-BETA</div>
         </header>
 
         <div class="hero-banner">
@@ -177,6 +192,13 @@
                 <div class="card-title">Live Scoreboard</div>
                 <div class="card-desc">Real-time data feeds are currently disconnected for maintenance.</div>
                 <button class="btn-yellow" onclick="openPage('score-page')">Enter Scoreboard</button>
+            </div>
+
+            <div class="feature-card">
+                <span class="card-icon">⭐</span>
+                <div class="card-title">Athlete of the Week</div>
+                <div class="card-desc">TBD: Nominations will begin once the athletic season officially starts.</div>
+                <button class="btn-yellow" onclick="openPage('athlete-page')">View Athlete</button>
             </div>
 
             <div class="feature-card">
@@ -202,6 +224,18 @@
             <div class="huge-text">No Live Data</div>
             <p style="color: var(--text-gray); margin-top: 15px; font-size: 0.9rem;">
                 Live game data will appear here once the testing phase is complete.
+            </p>
+        </div>
+    </div>
+
+    <div id="athlete-page" class="page-overlay">
+        <button class="back-btn" onclick="closePage('athlete-page')">← EXIT VIEW</button>
+        <div class="no-data-view">
+            <div class="profile-placeholder">👤</div>
+            <div class="status-badge">SEASON NOT STARTED</div>
+            <div class="huge-text">TBD</div>
+            <p style="color: var(--text-gray); margin-top: 15px; font-size: 0.9rem; max-width: 280px;">
+                Athlete of the Week selections are currently unavailable as the season has not yet started.
             </p>
         </div>
     </div>
