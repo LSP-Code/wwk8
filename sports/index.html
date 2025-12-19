@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WWK8 Yellow Jackets Athletics</title>
+    <title>WWK8 Yellow Jackets Athletics | Beta</title>
     <style>
         :root {
             --primary-yellow: #FFD700;
@@ -18,22 +18,33 @@
         body {
             background-color: var(--bg-black);
             color: var(--text-white);
-            overflow: hidden; /* Prevents scrolling behind the fullscreen views */
+            overflow: hidden;
             height: 100vh;
         }
 
-        /* --- Main Dashboard --- */
+        /* --- Dashboard --- */
         #dashboard {
             height: 100vh;
             overflow-y: auto;
             padding-bottom: 40px;
-            transition: opacity 0.3s ease;
         }
 
         header {
             padding: 20px;
-            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 2px solid var(--primary-yellow);
+        }
+
+        .beta-tag {
+            background: #ff4444;
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 900;
+            padding: 3px 8px;
+            border-radius: 4px;
+            letter-spacing: 1px;
         }
 
         .hero-banner {
@@ -43,7 +54,7 @@
 
         .hero-banner h1 { font-family: 'Impact', sans-serif; font-size: 2.5rem; letter-spacing: 2px; }
 
-        /* --- Image Style Cards --- */
+        /* --- Cards --- */
         .card-container {
             display: flex;
             flex-direction: column;
@@ -57,12 +68,11 @@
             padding: 40px 25px;
             text-align: center;
             border: 1px solid #252525;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .card-icon { font-size: 50px; margin-bottom: 20px; display: block; }
         .card-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 12px; }
-        .card-desc { color: var(--text-gray); font-size: 0.95rem; margin-bottom: 30px; line-height: 1.5; }
+        .card-desc { color: var(--text-gray); font-size: 0.95rem; margin-bottom: 30px; }
 
         .btn-yellow {
             background: var(--primary-yellow);
@@ -72,12 +82,11 @@
             padding: 16px;
             border-radius: 14px;
             font-weight: 900;
-            font-size: 1rem;
             cursor: pointer;
             text-transform: capitalize;
         }
 
-        /* --- Fullscreen Overlay Logic --- */
+        /* --- Overlay Transitions --- */
         .page-overlay {
             position: fixed;
             top: 0;
@@ -86,22 +95,18 @@
             height: 100%;
             background: var(--bg-black);
             z-index: 2000;
-            display: none; /* Hidden until clicked */
+            display: none;
             flex-direction: column;
-            animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideUp 0.3s ease-out;
         }
 
-        @keyframes slideIn {
+        @keyframes slideUp {
             from { transform: translateY(100%); }
             to { transform: translateY(0); }
         }
 
-        .close-area {
-            padding: 20px;
-            z-index: 2100;
-        }
-
         .back-btn {
+            margin: 20px;
             background: rgba(255,255,255,0.1);
             border: none;
             color: white;
@@ -109,71 +114,41 @@
             border-radius: 30px;
             font-weight: bold;
             cursor: pointer;
+            align-self: flex-start;
         }
 
-        /* --- Visual Style: HUGE SCORE SCREEN --- */
+        /* --- No Data State Styling --- */
         #score-page {
-            /* This mimics your second image (Splash background) */
-            background: #000;
-            background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png'), 
-                              linear-gradient(45deg, var(--primary-yellow) 10%, transparent 10%, transparent 50%, var(--primary-yellow) 50%, var(--primary-yellow) 60%, transparent 60%);
-            background-size: 100% 100%, 300px 300px;
-            display: none;
+            background-color: #000;
+            background-image: linear-gradient(45deg, var(--primary-yellow) 10%, transparent 10%, transparent 50%, var(--primary-yellow) 50%, var(--primary-yellow) 60%, transparent 60%);
+            background-size: 300px 300px;
+        }
+
+        .no-data-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            text-align: center;
+            padding: 40px;
         }
 
-        .scoreboard-container {
+        .no-data-box {
             background: #000;
+            border: 2px dashed #444;
             padding: 40px;
             border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            width: 100%;
+            max-width: 320px;
         }
 
-        .score-box {
-            background: var(--primary-yellow);
-            color: #000;
-            padding: 20px;
-            border-radius: 15px;
-            font-family: 'Impact', sans-serif;
-            font-size: 4rem;
-            min-width: 100px;
-            text-align: center;
-        }
-
-        .vs-text {
-            font-family: 'Impact', sans-serif;
-            font-size: 2.5rem;
-            font-style: italic;
-            color: var(--primary-yellow);
-        }
-
-        .team-label {
-            margin-top: 10px;
+        .no-data-text {
             font-family: 'Impact', sans-serif;
             font-size: 1.5rem;
             color: var(--primary-yellow);
-            text-transform: uppercase;
-        }
-
-        /* --- Visual Style: HISTORY SCREEN --- */
-        .history-content {
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        .history-card {
-            background: var(--card-dark);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 5px solid var(--primary-yellow);
+            letter-spacing: 1px;
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -181,100 +156,66 @@
 
     <div id="dashboard">
         <header>
-            <div style="font-weight: 900; letter-spacing: 2px; color: var(--primary-yellow);">WWK8 HUB</div>
+            <div style="font-weight: 900; color: var(--primary-yellow);">WWK8 HUB</div>
+            <div class="beta-tag">BETA TESTING</div>
         </header>
 
         <div class="hero-banner">
             <h1>YELLOW <span style="color:var(--primary-yellow)">JACKETS</span></h1>
-            <p style="color: var(--text-gray); font-size: 0.8rem; margin-top: 5px; letter-spacing: 3px;">ATHLETICS</p>
+            <p style="color: var(--text-gray); font-size: 0.8rem; letter-spacing: 2px;">ATHLETICS APP</p>
         </div>
 
         <div class="card-container">
             <div class="feature-card">
                 <span class="card-icon">🎯</span>
                 <div class="card-title">Live Scoreboard</div>
-                <div class="card-desc">Check the huge real-time scoring for current Yellow Jacket games.</div>
-                <button class="btn-yellow" onclick="showPage('score-page')">View Scores</button>
+                <div class="card-desc">Real-time scoring is currently disabled. Site is in development.</div>
+                <button class="btn-yellow" onclick="openPage('score-page')">View Scores</button>
             </div>
 
             <div class="feature-card">
                 <span class="card-icon">🎟️</span>
                 <div class="card-title">Purchase Tickets</div>
-                <div class="card-desc">Verify your eligibility and requirements for the big event at the box office.</div>
-                <button class="btn-yellow" onclick="window.open('https://events.hometownticketing.com/boxoffice/hernandoschools/entity/schools/24')">Buy Tickets</button>
+                <div class="card-desc">Ticket links will be updated once the box office opens.</div>
+                <button class="btn-yellow" onclick="window.open('https://events.hometownticketing.com/boxoffice/hernandoschools/entity/schools/24')">Box Office</button>
             </div>
 
             <div class="feature-card">
                 <span class="card-icon">📊</span>
                 <div class="card-title">Season History</div>
-                <div class="card-desc">View your previous rotations, game stats, and season results.</div>
-                <button class="btn-yellow" onclick="showPage('history-page')">View History</button>
+                <div class="card-desc">No historical data available for the current beta version.</div>
+                <button class="btn-yellow" onclick="openPage('history-page')">View History</button>
             </div>
         </div>
     </div>
 
     <div id="score-page" class="page-overlay">
-        <div class="close-area">
-            <button class="back-btn" onclick="hidePage('score-page')">← BACK</button>
-        </div>
-        
-        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-            <div class="scoreboard-container">
-                <div style="text-align: center;">
-                    <div class="score-box">12</div>
-                    <div class="team-label">WWK8</div>
-                </div>
-                
-                <div class="vs-text">VS</div>
-                
-                <div style="text-align: center;">
-                    <div class="score-box">12</div>
-                    <div class="team-label">N/A</div>
-                </div>
+        <button class="back-btn" onclick="closePage('score-page')">← BACK</button>
+        <div class="no-data-container">
+            <div class="no-data-box">
+                <div style="font-size: 40px;">🚫</div>
+                <div class="no-data-text">NO LIVE DATA</div>
+                <p style="color: var(--text-gray); font-size: 0.8rem; margin-top: 10px;">The scoreboard is currently offline for beta testing.</p>
             </div>
-            <p style="margin-top: 30px; font-weight: bold; letter-spacing: 2px; color: black; background: var(--primary-yellow); padding: 5px 20px; border-radius: 20px;">LIVE NOW</p>
         </div>
     </div>
 
     <div id="history-page" class="page-overlay">
-        <div class="close-area">
-            <button class="back-btn" onclick="hidePage('history-page')">← BACK</button>
-        </div>
-        <div class="history-content">
-            <h2 style="font-family: 'Impact'; font-size: 2rem; margin-bottom: 20px; color: var(--primary-yellow);">SEASON RESULTS</h2>
-            
-            <div class="history-card">
-                <div>
-                    <div style="font-size: 0.8rem; color: var(--primary-yellow); font-weight: 800;">FOOTBALL</div>
-                    <div style="font-weight: bold; font-size: 1.1rem;">vs Central High</div>
-                </div>
-                <div style="font-family: 'Impact'; font-size: 2rem;">24-7</div>
-            </div>
-
-            <div class="history-card">
-                <div>
-                    <div style="font-size: 0.8rem; color: var(--primary-yellow); font-weight: 800;">VOLLEYBALL</div>
-                    <div style="font-weight: bold; font-size: 1.1rem;">vs Nature Coast</div>
-                </div>
-                <div style="font-family: 'Impact'; font-size: 2rem;">3-0</div>
-            </div>
+        <button class="back-btn" onclick="closePage('history-page')">← BACK</button>
+        <div class="no-data-container">
+            <div style="font-size: 60px; margin-bottom: 20px;">📂</div>
+            <div class="no-data-text">NO RECORDS FOUND</div>
+            <p style="color: var(--text-gray); max-width: 250px; margin-top: 10px;">Database migration in progress. Check back once development is complete.</p>
         </div>
     </div>
 
     <script>
-        function showPage(id) {
-            // Hide dashboard
-            document.getElementById('dashboard').style.opacity = '0';
-            // Show overlay
-            const page = document.getElementById(id);
-            page.style.display = 'flex';
+        function openPage(id) {
+            document.getElementById(id).style.display = 'flex';
         }
 
-        function hidePage(id) {
-            // Hide overlay
+        function closePage(id) {
             document.getElementById(id).style.display = 'none';
-            // Show dashboard
-            document.getElementById('dashboard').style.opacity = '1';
         }
     </script>
 </body>
