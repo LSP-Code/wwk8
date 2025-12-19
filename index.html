@@ -135,6 +135,15 @@
 
         <div class="app-card">
             <div>
+                <div class="icon-box">🔗</div>
+                <h3>Student Links</h3>
+                <p>Quick access to Canvas, Skyward, and school resources.</p>
+            </div>
+            <a href="https://wwk8.xyz/links" class="launch-btn">Go to Links</a>
+        </div>
+
+        <div class="app-card">
+            <div>
                 <div class="icon-box">📅</div>
                 <h3>Campus Calendar</h3>
                 <p id="next-major-event">Next Event: <span class="highlight-text">Loading...</span></p>
@@ -208,7 +217,7 @@
             }
         });
 
-        // --- AUTOMATIC DAY TRACKER & CALENDAR LOGIC ---
+        // --- AUTOMATIC DAY TRACKER & CALENDAR LOGIC (THROUGH MAY) ---
         function updateHub() {
             const dayName = document.getElementById('today-name');
             const dayStatus = document.getElementById('today-status');
@@ -218,50 +227,42 @@
             const y = now.getFullYear();
             const m = now.getMonth() + 1;
             const d = now.getDate();
-            const w = now.getDay(); // 0=Sun, 6=Sat
+            const w = now.getDay(); 
 
             let todayTitle = "SCHOOL DAY";
             let statusText = "Normal Hours";
 
-            // DATABASE OF ALL DATES FROM MAY TO DECEMBER
-            // Dec 2025
+            // DATABASE LOGIC
             if (y === 2025 && m === 12) {
                 if (d === 18) { todayTitle = "STING FEST"; statusText = "Early Release"; }
                 else if (d === 19) { todayTitle = "DAY 7"; statusText = "Early Release"; }
                 else if (d >= 22) { todayTitle = "WINTER BREAK"; statusText = "No School"; }
             } 
-            // Jan 2026
             else if (y === 2026 && m === 1) {
                 if (d <= 2) { todayTitle = "WINTER BREAK"; statusText = "No School"; }
                 else if (d === 5) { todayTitle = "PROFESSIONAL DAY"; statusText = "No Students"; }
                 else if (d === 19) { todayTitle = "MLK DAY"; statusText = "No School"; }
                 else if (d === 30) { todayTitle = "EARLY RELEASE"; statusText = "Dismissal 12:10"; }
             }
-            // Feb 2026
             else if (y === 2026 && m === 2) {
                 if (d === 5) { todayTitle = "CLASS PICTURES"; statusText = "Elementary"; }
                 else if (d === 16) { todayTitle = "PRESIDENT'S DAY"; statusText = "No School"; }
                 else if (d === 27) { todayTitle = "EARLY RELEASE"; statusText = "Dismissal 12:10"; }
             }
-            // March 2026
             else if (y === 2026 && m === 3) {
-                if (d === 3) { todayTitle = "SPRING PHOTOS"; statusText = "Elementary"; }
-                else if (d === 4) { todayTitle = "SPRING PHOTOS"; statusText = "Middle School"; }
+                if (d === 3 || d === 4) { todayTitle = "SPRING PHOTOS"; statusText = "Picture Day"; }
                 else if (d >= 16 && d <= 20) { todayTitle = "SPRING BREAK"; statusText = "No School"; }
                 else if (d === 23) { todayTitle = "PROFESSIONAL DAY"; statusText = "No Students"; }
             }
-            // April 2026
             else if (y === 2026 && m === 4) {
                 if (d === 3) { todayTitle = "LONG WEEKEND"; statusText = "No School"; }
                 else if (d === 22) { todayTitle = "K-CAP & GOWN"; statusText = "Kinder Photos"; }
             }
-            // May 2026
             else if (y === 2026 && m === 5) {
                 if (d === 25) { todayTitle = "MEMORIAL DAY"; statusText = "No School"; }
-                else if (d >= 27) { todayTitle = "END OF YEAR"; statusText = "Early Release Days"; }
+                else if (d >= 27) { todayTitle = "END OF YEAR"; statusText = "Early Release"; }
             }
 
-            // Handle Weekends
             if ((w === 0 || w === 6) && todayTitle === "SCHOOL DAY") {
                 todayTitle = "WEEKEND";
                 statusText = "See you Monday!";
@@ -270,7 +271,7 @@
             dayName.innerText = todayTitle;
             dayStatus.innerHTML = `Status: <span class="highlight-text">${statusText}</span>`;
 
-            // Update Next Event Preview
+            // Calendar Tile Update
             if (m < 12 || (m === 12 && d < 22)) nextEventLabel.innerHTML = `Next Break: <span class="highlight-text">Winter Break (Dec 22)</span>`;
             else if (m === 1) nextEventLabel.innerHTML = `Next Holiday: <span class="highlight-text">MLK Day (Jan 19)</span>`;
             else if (m === 2) nextEventLabel.innerHTML = `Next Break: <span class="highlight-text">Spring Break (Mar 16)</span>`;
