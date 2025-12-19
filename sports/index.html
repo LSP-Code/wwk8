@@ -11,6 +11,7 @@
             --card-dark: #1a1a1a;
             --text-white: #ffffff;
             --text-gray: #a0a0a0;
+            --beta-red: #d32f2f;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
@@ -22,9 +23,25 @@
             height: 100vh;
         }
 
+        /* --- STICKY BETA BANNER --- */
+        .beta-header-stripe {
+            background: var(--beta-red);
+            color: white;
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 900;
+            padding: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: sticky;
+            top: 0;
+            z-index: 3000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
         /* --- Dashboard --- */
         #dashboard {
-            height: 100vh;
+            height: calc(100vh - 35px);
             overflow-y: auto;
             padding-bottom: 40px;
         }
@@ -35,16 +52,6 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px solid var(--primary-yellow);
-        }
-
-        .beta-tag {
-            background: #ff4444;
-            color: white;
-            font-size: 0.6rem;
-            font-weight: 900;
-            padding: 3px 8px;
-            border-radius: 4px;
-            letter-spacing: 1px;
         }
 
         .hero-banner {
@@ -68,6 +75,7 @@
             padding: 40px 25px;
             text-align: center;
             border: 1px solid #252525;
+            position: relative;
         }
 
         .card-icon { font-size: 50px; margin-bottom: 20px; display: block; }
@@ -86,7 +94,7 @@
             text-transform: capitalize;
         }
 
-        /* --- Overlay Transitions --- */
+        /* --- Fullscreen Overlays --- */
         .page-overlay {
             position: fixed;
             top: 0;
@@ -106,7 +114,7 @@
         }
 
         .back-btn {
-            margin: 20px;
+            margin: 45px 20px 20px 20px; /* Space for the red banner */
             background: rgba(255,255,255,0.1);
             border: none;
             color: white;
@@ -117,14 +125,8 @@
             align-self: flex-start;
         }
 
-        /* --- No Data State Styling --- */
-        #score-page {
-            background-color: #000;
-            background-image: linear-gradient(45deg, var(--primary-yellow) 10%, transparent 10%, transparent 50%, var(--primary-yellow) 50%, var(--primary-yellow) 60%, transparent 60%);
-            background-size: 300px 300px;
-        }
-
-        .no-data-container {
+        /* --- Empty State Content --- */
+        .no-data-view {
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -134,78 +136,84 @@
             padding: 40px;
         }
 
-        .no-data-box {
-            background: #000;
-            border: 2px dashed #444;
-            padding: 40px;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 320px;
+        .status-badge {
+            border: 1px solid var(--text-gray);
+            color: var(--text-gray);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-bottom: 10px;
+            font-weight: bold;
         }
 
-        .no-data-text {
+        .huge-text {
             font-family: 'Impact', sans-serif;
-            font-size: 1.5rem;
+            font-size: 2rem;
             color: var(--primary-yellow);
-            letter-spacing: 1px;
-            margin-top: 15px;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
+    <div class="beta-header-stripe">
+        ⚠️ Site in Development: Beta Testing Phase
+    </div>
+
     <div id="dashboard">
         <header>
-            <div style="font-weight: 900; color: var(--primary-yellow);">WWK8 HUB</div>
-            <div class="beta-tag">BETA TESTING</div>
+            <div style="font-weight: 900; color: var(--primary-yellow);">WWK8 YELLOW JACKETS</div>
+            <div style="font-size: 0.7rem; color: var(--text-gray);">v0.9.0-BETA</div>
         </header>
 
         <div class="hero-banner">
-            <h1>YELLOW <span style="color:var(--primary-yellow)">JACKETS</span></h1>
-            <p style="color: var(--text-gray); font-size: 0.8rem; letter-spacing: 2px;">ATHLETICS APP</p>
+            <h1>ATHLETICS <span style="color:var(--primary-yellow)">HUB</span></h1>
+            <p style="color: var(--text-gray); font-size: 0.8rem; letter-spacing: 2px; margin-top: 5px;">OFFICIAL DEVELOPMENT PORTAL</p>
         </div>
 
         <div class="card-container">
             <div class="feature-card">
                 <span class="card-icon">🎯</span>
                 <div class="card-title">Live Scoreboard</div>
-                <div class="card-desc">Real-time scoring is currently disabled. Site is in development.</div>
-                <button class="btn-yellow" onclick="openPage('score-page')">View Scores</button>
+                <div class="card-desc">Real-time data feeds are currently disconnected for maintenance.</div>
+                <button class="btn-yellow" onclick="openPage('score-page')">Enter Scoreboard</button>
             </div>
 
             <div class="feature-card">
                 <span class="card-icon">🎟️</span>
                 <div class="card-title">Purchase Tickets</div>
-                <div class="card-desc">Ticket links will be updated once the box office opens.</div>
-                <button class="btn-yellow" onclick="window.open('https://events.hometownticketing.com/boxoffice/hernandoschools/entity/schools/24')">Box Office</button>
+                <div class="card-desc">The official box office portal link is ready for final verification.</div>
+                <button class="btn-yellow" onclick="window.open('https://events.hometownticketing.com/boxoffice/hernandoschools/entity/schools/24')">Box Office Test</button>
             </div>
 
             <div class="feature-card">
                 <span class="card-icon">📊</span>
                 <div class="card-title">Season History</div>
-                <div class="card-desc">No historical data available for the current beta version.</div>
-                <button class="btn-yellow" onclick="openPage('history-page')">View History</button>
+                <div class="card-desc">Previous records are currently being cleared and indexed.</div>
+                <button class="btn-yellow" onclick="openPage('history-page')">Check Records</button>
             </div>
         </div>
     </div>
 
     <div id="score-page" class="page-overlay">
-        <button class="back-btn" onclick="closePage('score-page')">← BACK</button>
-        <div class="no-data-container">
-            <div class="no-data-box">
-                <div style="font-size: 40px;">🚫</div>
-                <div class="no-data-text">NO LIVE DATA</div>
-                <p style="color: var(--text-gray); font-size: 0.8rem; margin-top: 10px;">The scoreboard is currently offline for beta testing.</p>
-            </div>
+        <button class="back-btn" onclick="closePage('score-page')">← EXIT VIEW</button>
+        <div class="no-data-view">
+            <div class="status-badge">SYSTEM STATUS: OFFLINE</div>
+            <div class="huge-text">No Live Data</div>
+            <p style="color: var(--text-gray); margin-top: 15px; font-size: 0.9rem;">
+                Live game data will appear here once the testing phase is complete.
+            </p>
         </div>
     </div>
 
     <div id="history-page" class="page-overlay">
-        <button class="back-btn" onclick="closePage('history-page')">← BACK</button>
-        <div class="no-data-container">
-            <div style="font-size: 60px; margin-bottom: 20px;">📂</div>
-            <div class="no-data-text">NO RECORDS FOUND</div>
-            <p style="color: var(--text-gray); max-width: 250px; margin-top: 10px;">Database migration in progress. Check back once development is complete.</p>
+        <button class="back-btn" onclick="closePage('history-page')">← EXIT VIEW</button>
+        <div class="no-data-view">
+            <div class="status-badge">DATABASE STATUS: EMPTY</div>
+            <div class="huge-text">No History Found</div>
+            <p style="color: var(--text-gray); margin-top: 15px; font-size: 0.9rem;">
+                Historical archives are being migrated. No records available.
+            </p>
         </div>
     </div>
 
