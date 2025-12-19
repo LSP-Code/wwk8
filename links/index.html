@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Toolbox | WWK8</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-color: #f4f4f4;
+            --text-color: #1a1a1a;
+            --accent-yellow: #ffcc00;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f0f0f;
+            --text-color: #ffffff;
+            --glass-bg: rgba(25, 25, 25, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.5s ease;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Moving Honeycomb Pattern */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, var(--accent-yellow) 0%, transparent 8%);
+            background-size: 60px 60px;
+            opacity: 0.06;
+            animation: move 30s linear infinite;
+        }
+
+        @keyframes move {
+            from { background-position: 0 0; }
+            to { background-position: 600px 600px; }
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 5%;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-back {
+            text-decoration: none;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .nav-back:hover { color: var(--accent-yellow); transform: translateX(-3px); }
+
+        .theme-toggle {
+            background: var(--accent-yellow);
+            border: none;
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover { transform: scale(1.1) rotate(15deg); }
+
+        .hero {
+            text-align: center;
+            padding: 4.5rem 1rem 3rem 1rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+        }
+
+        .search-container {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        #searchBar {
+            width: 100%;
+            padding: 1.25rem 1.8rem;
+            border-radius: 20px;
+            border: 2px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            color: var(--text-color);
+            font-size: 1.15rem;
+            outline: none;
+            transition: var(--transition);
+            box-shadow: var(--card-shadow);
+        }
+
+        #searchBar:focus {
+            border-color: var(--accent-yellow);
+            box-shadow: 0 0 25px rgba(255, 204, 0, 0.4);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto 5rem auto;
+            padding: 0 24px;
+        }
+
+        .category-section {
+            margin-bottom: 4rem;
+        }
+
+        .category-title {
+            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 6px solid var(--accent-yellow);
+            padding-left: 18px;
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .link-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 1.8rem;
+            border-radius: 24px;
+            text-decoration: none;
+            color: var(--text-color);
+            backdrop-filter: blur(20px);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .link-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-yellow);
+            box-shadow: 0 20px 40px rgba(255, 204, 0, 0.25);
+        }
+
+        .link-card i {
+            background: var(--accent-yellow);
+            color: #000;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            margin-bottom: 8px;
+            transition: var(--transition);
+        }
+
+        .link-card:hover i { transform: scale(1.1) rotate(-5deg); }
+
+        .link-card h3 { font-size: 1.35rem; font-weight: 700; }
+        .link-card p { opacity: 0.8; font-size: 0.95rem; line-height: 1.5; }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 768px) {
+            .hero { padding-top: 2rem; }
+            .bento-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+
+    <header>
+        <a href="https://wwk8.xyz" class="nav-back">
+            <i data-lucide="arrow-left"></i> Back to Hub
+        </a>
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Dark Mode">
+            <i data-lucide="moon" id="theme-icon"></i>
+        </button>
+    </header>
+
+    <section class="hero">
+        <h1>Student Toolbox</h1>
+        <div class="search-container">
+            <input type="text" id="searchBar" placeholder="Find a resource..." onkeyup="filterLinks()">
+        </div>
+    </section>
+
+    <main class="container">
+        <div class="category-section" id="daily">
+            <h2 class="category-title"><i data-lucide="zap"></i> Daily Tools</h2>
+            <div class="bento-grid">
+                <a href="https://canvas.instructure.com" target="_blank" class="link-card" data-name="canvas learning">
+                    <i data-lucide="layout-dashboard"></i>
+                    <h3>Canvas</h3>
+                    <p>Access your digital classroom, submit work, and view grades.</p>
+                </a>
+                <a href="https://skyward.iscorp.com/scripts/wsisa.dll/WService=wseduhernandocofl/seplog01.w?nopopup=true" target="_blank" class="link-card" data-name="skyward grades grades attendance">
+                    <i data-lucide="line-chart"></i>
+                    <h3>Skyward</h3>
+                    <p>Check your official Hernando County grades and attendance records.</p>
+                </a>
+                <a href="https://launchpad.classlink.com/hernandoschools" target="_blank" class="link-card" data-name="classlink clever login launchpad">
+                    <i data-lucide="key"></i>
+                    <h3>ClassLink</h3>
+                    <p>Your portal for all school apps including Clever and textbooks.</p>
+                </a>
+                <a href="https://outlook.office.com/mail/" target="_blank" class="link-card" data-name="outlook email student mail">
+                    <i data-lucide="mail"></i>
+                    <h3>Outlook</h3>
+                    <p>Official student email for school communication.</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="category-section" id="academics">
+            <h2 class="category-title"><i data-lucide="graduation-cap"></i> Academic Resources</h2>
+            <div class="bento-grid">
+                <a href="https://www.hernandoschools.org/313339_2" target="_blank" class="link-card" data-name="handbook conduct code rules">
+                    <i data-lucide="book-open"></i>
+                    <h3>Student Code of Conduct</h3>
+                    <p>Official Hernando County guidelines for student behavior and rules.</p>
+                </a>
+                <a href="https://www.office.com" target="_blank" class="link-card" data-name="office 365 m365 word powerpoint excel">
+                    <i data-lucide="file-text"></i>
+                    <h3>Office 365</h3>
+                    <p>Access Word, Excel, PowerPoint, and your school OneDrive storage.</p>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // Theme Management
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('toolbox-theme', newTheme);
+            updateIcon(newTheme);
+        }
+
+        function updateIcon(theme) {
+            const icon = document.getElementById('theme-icon');
+            if (theme === 'dark') {
+                icon.setAttribute('data-lucide', 'sun');
+            } else {
+                icon.setAttribute('data-lucide', 'moon');
+            }
+            lucide.createIcons();
+        }
+
+        const savedTheme = localStorage.getItem('toolbox-theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        updateIcon(savedTheme);
+
+        // Search Engine
+        function filterLinks() {
+            const query = document.getElementById('searchBar').value.toLowerCase();
+            const cards = document.querySelectorAll('.link-card');
+            const sections = document.querySelectorAll('.category-section');
+
+            cards.forEach(card => {
+                const searchTags = card.getAttribute('data-name');
+                const title = card.querySelector('h3').innerText.toLowerCase();
+                
+                if (searchTags.includes(query) || title.includes(query)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            sections.forEach(section => {
+                const visibleCards = section.querySelectorAll('.link-card:not(.hidden)');
+                section.style.display = visibleCards.length === 0 ? 'none' : 'block';
+            });
+        }
+    </script>
+</body>
+</html>
