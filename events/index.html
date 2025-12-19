@@ -3,161 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WWK8 Event Dashboard</title>
+    <title>WWK8 Events Portal | BETA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-yellow: #FFD700;
-            --dark-bg: #121212;
-            --card-bg: #1E1E1E;
-            --text-main: #FFFFFF;
-            --text-muted: #A0A0A0;
-            --accent-black: #000000;
+            --school-yellow: #FFD700;
+            --deep-charcoal: #121212;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--dark-bg); color: var(--text-main); padding: 20px; line-height: 1.6; }
-
-        header { max-width: 1000px; margin: 0 auto 30px auto; }
-        .nav-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        
-        /* Updated Link Styles */
-        .btn-back { 
-            background: transparent; 
-            color: var(--primary-yellow); 
-            border: 1px solid var(--primary-yellow); 
-            padding: 8px 16px; 
-            border-radius: 6px; 
-            text-decoration: none; 
-            font-size: 0.9rem; 
-            transition: 0.3s; 
-            font-weight: 600;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--deep-charcoal);
+            color: white;
+            overflow-x: hidden;
         }
-        .btn-back:hover { background: var(--primary-yellow); color: var(--accent-black); }
-        
-        .school-logo { font-weight: 800; font-size: 1.5rem; }
-        .school-logo span { color: var(--primary-yellow); }
 
-        /* Announcement Banner */
-        .announcement-bar {
-            background: #2a2a2a;
-            border: 2px solid var(--primary-yellow);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 30px;
+        .mesh-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(at 0% 0%, #1a1a1a 0%, transparent 50%),
+                        radial-gradient(at 100% 0%, #2a2a2a 0%, transparent 50%),
+                        radial-gradient(at 100% 100%, #1a1a1a 0%, transparent 50%),
+                        radial-gradient(at 0% 100%, #222 0%, transparent 50%);
+            animation: meshMove 20s ease infinite alternate;
         }
-        .announcement-bar h2 { color: var(--primary-yellow); font-size: 1.1rem; text-transform: uppercase; margin-bottom: 10px; }
-        .announcement-item { margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px; }
-        .badge { background: var(--primary-yellow); color: #000; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; margin-top: 4px; }
 
-        /* Filters */
-        .filter-container { display: flex; gap: 10px; overflow-x: auto; margin-bottom: 20px; padding-bottom: 5px; }
-        .filter-btn { background: var(--card-bg); border: none; color: var(--text-muted); padding: 10px 20px; border-radius: 20px; cursor: pointer; transition: 0.2s; font-weight: 600; }
-        .filter-btn.active { background: var(--primary-yellow); color: var(--accent-black); }
+        @keyframes meshMove {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
 
-        /* Event Grid */
-        .event-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; }
-        .event-card { background: var(--card-bg); border-radius: 12px; padding: 20px; border-top: 4px solid var(--primary-yellow); display: flex; flex-direction: column; }
-        .event-tag { font-size: 0.7rem; text-transform: uppercase; font-weight: bold; color: var(--primary-yellow); margin-bottom: 8px; }
-        .event-title { font-size: 1.25rem; margin-bottom: 10px; }
-        .event-details { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; }
-        .event-description { font-size: 0.9rem; color: #ddd; flex-grow: 1; }
-        .pj-alert { color: #5dade2; font-weight: bold; margin-top: 10px; font-size: 0.85rem; }
-        
-        .hidden { display: none; }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-        @media (max-width: 600px) { .event-grid { grid-template-columns: 1fr; } }
+        .yellow-glow {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
+            border: 1px solid var(--school-yellow);
+        }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body>
+    <div class="mesh-bg"></div>
 
-    <header>
-        <div class="nav-top">
-            <a href="https://wwk8.xyz" class="btn-back">← Back to Hub</a>
-            <div class="school-logo">WWK<span>8</span></div>
+    <div class="fixed top-0 left-0 w-full z-50 p-6 flex justify-between items-center">
+        <a href="https://wwk8.xyz" class="glass px-4 py-2 rounded-full flex items-center gap-2 hover:bg-white/10 transition text-xs font-bold tracking-widest">
+            <i data-lucide="arrow-left" class="w-4 h-4 text-yellow-400"></i> BACK TO HUB
+        </a>
+        <div class="bg-yellow-400 text-black px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter">
+            Beta v1.0
         </div>
+    </div>
 
-        <div class="announcement-bar">
-            <h2>⚠️ Important Logistics</h2>
-            <div class="announcement-item">
-                <span class="badge">Dismissal</span>
-                <p>3 days of Early Release starting tomorrow. Dismissal begins at <strong>12:10 PM</strong>.</p>
+    <main class="max-w-4xl mx-auto px-6 pt-24 pb-20">
+        
+        <section class="mb-12">
+            <div class="glass yellow-glow rounded-3xl p-8 text-center relative overflow-hidden">
+                <span class="text-yellow-400 font-extrabold tracking-widest text-xs uppercase mb-2 block">Returning In</span>
+                <h1 class="text-3xl md:text-5xl font-black mb-6 uppercase">Winter Break</h1>
+                
+                <div id="countdown" class="grid grid-cols-4 gap-4 max-w-sm mx-auto">
+                    <div class="flex flex-col"><span id="days" class="text-3xl font-bold">00</span><span class="text-[10px] uppercase opacity-50">Days</span></div>
+                    <div class="flex flex-col"><span id="hours" class="text-3xl font-bold">00</span><span class="text-[10px] uppercase opacity-50">Hrs</span></div>
+                    <div class="flex flex-col"><span id="mins" class="text-3xl font-bold">00</span><span class="text-[10px] uppercase opacity-50">Min</span></div>
+                    <div class="flex flex-col"><span id="secs" class="text-3xl font-bold text-yellow-400">00</span><span class="text-[10px] uppercase opacity-50">Sec</span></div>
+                </div>
             </div>
-            <div class="announcement-item">
-                <span class="badge">Bags</span>
-                <p>Standard backpacks or drawstring bags are permitted.</p>
-            </div>
-        </div>
+        </section>
 
-        <div class="filter-container">
-            <button class="filter-btn active" onclick="filterEvents('all')">All Events</button>
-            <button class="filter-btn" onclick="filterEvents('spirit')">Spirit Days</button>
-            <button class="filter-btn" onclick="filterEvents('challenge')">Challenges</button>
-        </div>
-    </header>
-
-    <main class="event-grid" id="eventGrid">
-        <div class="event-card" data-category="spirit">
-            <span class="event-tag">Spirit Week</span>
-            <h3 class="event-title">Reindeer Day</h3>
-            <div class="event-details">
-                <div>📅 12/17</div>
-                <div>📍 Campus-wide</div>
+        <section class="text-center space-y-8">
+            <div class="py-12 px-6">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 border border-white/10 mb-4">
+                    <i data-lucide="calendar-off" class="text-neutral-500 w-8 h-8"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">No Active Events</h2>
+                <p class="text-neutral-400 max-w-xs mx-auto text-sm leading-relaxed">
+                    The portal is currently in <span class="text-yellow-400 font-semibold">Beta Testing</span>. There are no scheduled events until school resumes on <span class="text-white font-medium">January 5th</span>.
+                </p>
             </div>
-            <p class="event-description">Wear brown, red, and antlers.</p>
-        </div>
 
-        <div class="event-card" data-category="spirit">
-            <span class="event-tag">Spirit Week</span>
-            <h3 class="event-title">Comfy Cozy</h3>
-            <div class="event-details">
-                <div>📅 12/18</div>
-                <div>📍 Campus-wide</div>
-            </div>
-            <p class="event-description">Wear your holiday pajamas. No slippers or blankets.</p>
-            <p class="pj-alert">✓ PJ Day Permitted</p>
-        </div>
+            <hr class="border-white/5 w-1/4 mx-auto">
 
-        <div class="event-card" data-category="spirit">
-            <span class="event-tag">Spirit Week</span>
-            <h3 class="event-title">Grinch Day</h3>
-            <div class="event-details">
-                <div>📅 12/19</div>
-                <div>📍 Campus-wide</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="glass rounded-2xl p-6 text-left border-l-2 border-l-yellow-400">
+                    <i data-lucide="flask-conical" class="w-5 h-5 text-yellow-400 mb-3"></i>
+                    <h3 class="font-bold mb-1">Portal Testing</h3>
+                    <p class="text-xs text-neutral-500">We are currently calibrating the real-time sync with the school's master calendar.</p>
+                </div>
+                <div class="glass rounded-2xl p-6 text-left">
+                    <i data-lucide="thermometer-snowflake" class="w-5 h-5 text-blue-400 mb-3"></i>
+                    <h3 class="font-bold mb-1">Winter Hibernation</h3>
+                    <p class="text-xs text-neutral-500">All club activities and testing schedules are suspended until the start of the new term.</p>
+                </div>
             </div>
-            <p class="event-description">Wear your Grinch Gear. Grinch PJs are permitted.</p>
-            <p class="pj-alert">✓ PJ Day Permitted</p>
-        </div>
-
-        <div class="event-card" data-category="challenge">
-            <span class="event-tag">One Day Challenge</span>
-            <h3 class="event-title">Toy Drive Challenge</h3>
-            <div class="event-details">
-                <div>📅 12/12 (Legacy / Active)</div>
-                <div>📍 Front Office</div>
-            </div>
-            <p class="event-description">It is better to give than receive. Bring in an unwrapped toy for the House Challenge!</p>
-        </div>
+        </section>
     </main>
 
     <script>
-        function filterEvents(category) {
-            const buttons = document.querySelectorAll('.filter-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            
-            // Handle the active state for the clicked button
-            if (event) {
-                event.target.classList.add('active');
+        lucide.createIcons();
+
+        // Target: Jan 5 at 8:00 AM
+        const targetDate = new Date("January 5, 2026 08:00:00").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                document.getElementById("countdown").innerHTML = "<div class='col-span-4 text-yellow-400 font-bold'>Welcome Back!</div>";
+                return;
             }
 
-            const cards = document.querySelectorAll('.event-card');
-            cards.forEach(card => {
-                if (category === 'all' || card.getAttribute('data-category') === category) {
-                    card.classList.remove('hidden');
-                } else {
-                    card.classList.add('hidden');
-                }
-            });
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerText = days.toString().padStart(2, '0');
+            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
+            document.getElementById("mins").innerText = minutes.toString().padStart(2, '0');
+            document.getElementById("secs").innerText = seconds.toString().padStart(2, '0');
         }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
     </script>
 </body>
 </html>
