@@ -4,161 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WWK8 | Cloud Dismissal</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
         [x-cloak] { display: none !important; }
-        body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        .projector-font { font-family: 'Bebas Neue', cursive; letter-spacing: 0.05em; }
+        body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; }
+        .projector-font { font-family: 'Bebas Neue', cursive; }
         .bg-wwk8-yellow { background-color: #FFD700; }
-        .text-wwk8-yellow { color: #FFD700; }
-        .dismissal-alert { animation: pulse-bg 2s infinite; }
-        @keyframes pulse-bg { 0%, 100% { background-color: #FFD700; } 50% { background-color: #FFF200; } }
     </style>
 </head>
-<body x-data="campusApp()">
+<body>
 
-    <div x-show="!isLoggedIn" class="min-h-screen flex items-center justify-center bg-black">
-        <div class="max-w-md w-full bg-zinc-900 p-10 rounded-2xl border border-zinc-800 shadow-2xl">
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-wwk8-yellow rounded-xl flex items-center justify-center text-black font-black text-3xl mx-auto mb-4">W</div>
-                <h1 class="text-2xl font-black uppercase tracking-tighter text-white">WWK8 COMMAND</h1>
-                <p class="text-zinc-500 text-sm">Cloud-Synced Logistics</p>
+    <div x-data="campusApp()" x-cloak>
+        
+        <div x-show="!isLoggedIn" class="min-h-screen flex items-center justify-center bg-black">
+            <div class="max-w-md w-full bg-zinc-900 p-10 rounded-2xl border border-zinc-800">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-wwk8-yellow rounded-xl flex items-center justify-center text-black font-black text-3xl mx-auto mb-4">W</div>
+                    <h1 class="text-2xl font-black text-white uppercase">WWK8 Command</h1>
+                </div>
+                <div class="space-y-4">
+                    <input x-model="loginForm.user" type="text" placeholder="Username" class="w-full bg-zinc-800 border border-zinc-700 p-3 rounded text-white outline-none">
+                    <input x-model="loginForm.pass" type="password" placeholder="Password" class="w-full bg-zinc-800 border border-zinc-700 p-3 rounded text-white outline-none">
+                    <button @click="login()" class="w-full bg-wwk8-yellow text-black font-black py-4 rounded-lg uppercase">Login</button>
+                </div>
             </div>
-            <div class="space-y-4">
-                <input x-model="loginForm.user" type="text" placeholder="Username (admin, teacher1, gate1)" class="w-full bg-zinc-800 border border-zinc-700 p-3 rounded text-white outline-none focus:border-yellow-400 uppercase font-bold text-xs">
-                <input x-model="loginForm.pass" type="password" placeholder="Password" class="w-full bg-zinc-800 border border-zinc-700 p-3 rounded text-white outline-none focus:border-yellow-400">
-                <button @click="login()" class="w-full bg-wwk8-yellow text-black font-black py-4 rounded-lg uppercase text-sm hover:bg-white transition">Authenticate</button>
-            </div>
+        </div>
+
+        <div x-show="isLoggedIn" class="min-h-screen flex flex-col md:flex-row">
+            <aside class="w-64 bg-zinc-900 border-r border-zinc-800 p-6 flex flex-col">
+                <div class="font-black text-wwk8-yellow mb-10 italic">WINDING WATERS</div>
+                <nav class="flex-1 space-y-2">
+                    <button @click="view = 'dispatch'" :class="view === 'dispatch' ? 'bg-zinc-800 text-wwk8-yellow' : 'text-zinc-500'" class="w-full text-left p-3 rounded font-bold text-xs uppercase">Dispatch</button>
+                    <button @click="view = 'teacher'" :class="view === 'teacher' ? 'bg-zinc-800 text-wwk8-yellow' : 'text-zinc-500'" class="w-full text-left p-3 rounded font-bold text-xs uppercase">Projector View</button>
+                    <button @click="view = 'roster'" :class="view === 'roster' ? 'bg-zinc-800 text-wwk8-yellow' : 'text-zinc-500'" class="w-full text-left p-3 rounded font-bold text-xs uppercase">Manage Roster</button>
+                </nav>
+                <button @click="logout()" class="w-full bg-zinc-800 text-white text-[10px] py-2 rounded uppercase font-black">Sign Out</button>
+            </aside>
+
+            <main class="flex-1 p-8 overflow-y-auto">
+                <div x-show="view === 'dispatch'">
+                    <h2 class="text-4xl font-black mb-8 italic">DISPATCH</h2>
+                    <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 max-w-md">
+                        <select x-model="selectedStudentId" class="w-full bg-black border border-zinc-700 p-4 rounded text-white mb-4 uppercase font-bold">
+                            <option value="">-- Select Student --</option>
+                            <template x-for="s in roster" :key="s.id">
+                                <option :value="s.id" x-text="s.name"></option>
+                            </template>
+                        </select>
+                        <button @click="checkIn('Car Rider')" class="w-full bg-wwk8-yellow text-black p-4 rounded font-black uppercase mb-2">Dismiss to Car</button>
+                    </div>
+                </div>
+
+                <div x-show="view === 'teacher'" class="h-full">
+                    <div class="bg-black border-4 border-zinc-900 rounded-3xl p-12 text-center h-full min-h-[400px] flex flex-col justify-center">
+                        <template x-for="s in teacherQueue" :key="s.id">
+                            <div class="bg-wwk8-yellow p-12 rounded-[3rem] text-black mb-6">
+                                <h2 class="text-9xl font-black projector-font leading-none uppercase" x-text="s.name"></h2>
+                                <button @click="removeFromQueue(s.id)" class="mt-8 bg-black text-white px-8 py-2 rounded-full font-bold uppercase text-xs text-zinc-400">Clear</button>
+                            </div>
+                        </template>
+                        <div x-show="teacherQueue.length === 0" class="text-zinc-800 font-black text-4xl uppercase tracking-widest italic">Monitoring Room 101</div>
+                    </div>
+                </div>
+
+                <div x-show="view === 'roster'">
+                    <h2 class="text-4xl font-black mb-8 text-wwk8-yellow italic">ROSTER</h2>
+                    <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 max-w-md">
+                        <input x-model="rosterForm.name" type="text" placeholder="STUDENT NAME" class="w-full bg-black border border-zinc-700 p-3 rounded mb-4 uppercase font-bold text-white">
+                        <button @click="addToRoster()" class="w-full bg-wwk8-yellow text-black font-black py-4 rounded uppercase">Add to Cloud</button>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
 
-    <div x-show="isLoggedIn" x-cloak class="min-h-screen flex flex-col md:flex-row">
-        
-        <aside class="w-64 bg-zinc-900 border-r border-zinc-800 p-6 flex flex-col shadow-2xl">
-            <div class="font-black text-wwk8-yellow mb-10 italic tracking-tighter text-xl">WINDING WATERS</div>
-            <nav class="flex-1 space-y-2">
-                <template x-if="userRole === 'dispatch' || userRole === 'admin'">
-                    <button @click="view = 'dispatch'" :class="view === 'dispatch' ? 'bg-zinc-800 text-wwk8-yellow shadow-lg' : 'text-zinc-500'" class="w-full text-left p-3 rounded font-black text-[10px] uppercase tracking-widest transition-all">Dispatch Console</button>
-                </template>
-                <template x-if="userRole === 'teacher' || userRole === 'admin'">
-                    <button @click="view = 'teacher'" :class="view === 'teacher' ? 'bg-zinc-800 text-wwk8-yellow shadow-lg' : 'text-zinc-500'" class="w-full text-left p-3 rounded font-black text-[10px] uppercase tracking-widest transition-all">Projector View</button>
-                </template>
-                <template x-if="userRole === 'admin'">
-                    <button @click="view = 'roster'" :class="view === 'roster' ? 'bg-zinc-800 text-wwk8-yellow shadow-lg' : 'text-zinc-500'" class="w-full text-left p-3 rounded font-black text-[10px] uppercase tracking-widest transition-all">Manage Roster</button>
-                </template>
-            </nav>
-            <div class="pt-4 border-t border-zinc-800">
-                <div class="mb-4 flex items-center space-x-2">
-                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    <span class="text-[9px] font-bold text-zinc-500 uppercase">Cloud Active</span>
-                </div>
-                <button @click="logout()" class="w-full bg-zinc-800 text-white text-[10px] py-2 rounded uppercase font-black hover:bg-red-900 transition">Sign Out</button>
-            </div>
-        </aside>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-        <main class="flex-1 p-8 overflow-y-auto">
-            
-            <div x-show="view === 'dispatch'">
-                <h2 class="text-4xl font-black mb-8 uppercase tracking-tighter italic">Dispatch <span class="text-wwk8-yellow">Gate</span></h2>
-                <div class="bg-zinc-900 p-8 rounded-2xl border border-zinc-800 mb-8 max-w-2xl shadow-xl">
-                    <label class="text-[10px] font-black uppercase text-zinc-500 mb-2 block tracking-widest">Identify Student</label>
-                    <select x-model="selectedStudentId" class="w-full bg-black border border-zinc-700 p-4 rounded-xl text-white mb-6 uppercase font-bold outline-none focus:border-wwk8-yellow">
-                        <option value="">-- Choose Name --</option>
-                        <template x-for="s in roster" :key="s.id">
-                            <option :value="s.id" x-text="s.name + ' (Room ' + s.room + ')'"></option>
-                        </template>
-                    </select>
-                    <div class="grid grid-cols-2 gap-4">
-                        <button @click="checkIn('Car Rider')" class="bg-wwk8-yellow text-black p-5 rounded-xl font-black uppercase hover:bg-white transition-all transform active:scale-95 shadow-lg">Car Rider</button>
-                        <button @click="checkIn('Bus')" class="bg-zinc-700 text-white p-5 rounded-xl font-black uppercase hover:bg-zinc-600 transition-all transform active:scale-95 shadow-lg">Bus Loop</button>
-                        <button @click="checkIn('Club')" class="bg-zinc-800 text-zinc-400 p-5 rounded-xl font-black uppercase hover:bg-zinc-700 transition-all transform active:scale-95 border border-zinc-700 text-xs">School Club</button>
-                        <button @click="checkIn('Sports')" class="bg-zinc-800 text-zinc-400 p-5 rounded-xl font-black uppercase hover:bg-zinc-700 transition-all transform active:scale-95 border border-zinc-700 text-xs">Athletics</button>
-                    </div>
-                </div>
-            </div>
-
-            <div x-show="view === 'teacher'" class="h-full flex flex-col">
-                <div class="bg-black border-4 border-zinc-900 rounded-[3rem] p-12 text-center h-full min-h-[600px] flex flex-col justify-center relative overflow-hidden">
-                    <div class="absolute top-8 left-8 text-zinc-900 text-9xl font-black projector-font opacity-20 pointer-events-none" x-text="room"></div>
-                    
-                    <div x-show="teacherQueue.length === 0">
-                        <div class="w-24 h-24 border-8 border-zinc-900 border-t-wwk8-yellow rounded-full animate-spin mx-auto mb-8"></div>
-                        <h2 class="text-7xl font-black text-zinc-800 uppercase tracking-widest">Monitoring</h2>
-                        <p class="text-zinc-700 uppercase mt-4 font-bold tracking-[0.5em] text-sm italic">Instruction in Progress • Room <span x-text="room"></span></p>
-                    </div>
-
-                    <div class="space-y-8">
-                        <template x-for="s in teacherQueue" :key="s.id">
-                            <div class="dismissal-alert p-16 rounded-[4rem] text-black shadow-2xl relative">
-                                <p class="font-black text-3xl uppercase mb-6 tracking-widest bg-black text-wwk8-yellow inline-block px-6 py-2 rounded-full" x-text="s.type"></p>
-                                <h2 class="text-[12rem] font-black projector-font leading-none uppercase tracking-tighter" x-text="s.name"></h2>
-                                <button @click="removeFromQueue(s.id)" class="mt-10 bg-black text-white px-10 py-3 rounded-full font-black uppercase text-sm tracking-widest hover:scale-110 transition-transform">Dismissed & Clear</button>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <div x-show="view === 'roster'">
-                <h2 class="text-4xl font-black mb-8 text-wwk8-yellow italic uppercase tracking-tighter underline">Roster Database</h2>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="bg-zinc-900 p-8 rounded-2xl border border-zinc-800 shadow-2xl">
-                        <h3 class="text-xs font-black uppercase text-zinc-500 mb-6 tracking-widest">Enroll New Student</h3>
-                        <div class="mb-4">
-                            <label class="text-[10px] font-black text-zinc-600 uppercase">Student Name</label>
-                            <input x-model="rosterForm.name" type="text" placeholder="FULL NAME" class="w-full bg-black border border-zinc-700 p-4 rounded-xl mt-1 uppercase font-black text-white outline-none focus:border-wwk8-yellow">
-                        </div>
-                        <div class="mb-8">
-                            <label class="text-[10px] font-black text-zinc-600 uppercase">Assigned Classroom</label>
-                            <select x-model="rosterForm.room" class="w-full bg-black border border-zinc-700 p-4 rounded-xl mt-1 text-white font-bold">
-                                <option value="101">Room 101 - Thompson</option>
-                                <option value="102">Room 102 - Garcia</option>
-                                <option value="103">Room 103 - Baker</option>
-                            </select>
-                        </div>
-                        <button @click="addToRoster()" class="w-full bg-wwk8-yellow text-black font-black py-5 rounded-xl uppercase tracking-widest hover:bg-white transition shadow-xl">Push to Master Roster</button>
-                    </div>
-
-                    <div class="bg-zinc-900/50 p-8 rounded-2xl border border-zinc-800 overflow-hidden">
-                        <h3 class="text-xs font-black uppercase text-zinc-500 mb-4 tracking-widest">Active Database</h3>
-                        <div class="max-h-[400px] overflow-y-auto space-y-2 pr-2">
-                            <template x-for="s in roster" :key="s.id">
-                                <div class="bg-black p-4 rounded-xl flex justify-between items-center border border-zinc-800">
-                                    <div>
-                                        <p class="font-black uppercase text-white" x-text="s.name"></p>
-                                        <p class="text-[9px] font-bold text-wwk8-yellow uppercase" x-text="'ROOM ' + s.room"></p>
-                                    </div>
-                                    <button @click="deleteFromRoster(s.id)" class="text-red-900 hover:text-red-500 font-black text-[10px] uppercase p-2">Delete</button>
-                                </div>
-                            </template>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
+    <script>
         const firebaseConfig = {
-          apiKey: "AIzaSyB5OIjvSeCMMMa6Bz4rQmuFE4ET1MQiaKE",
-          authDomain: "echo-dismissal.firebaseapp.com",
-          projectId: "echo-dismissal",
-          storageBucket: "echo-dismissal.firebasestorage.app",
-          messagingSenderId: "571130222930",
-          appId: "1:571130222930:web:a6c5eb24858beee981028b"
+            apiKey: "AIzaSyB5OIjvSeCMMMa6Bz4rQmuFE4ET1MQiaKE",
+            authDomain: "echo-dismissal.firebaseapp.com",
+            projectId: "echo-dismissal",
+            storageBucket: "echo-dismissal.firebasestorage.app",
+            messagingSenderId: "571130222930",
+            appId: "1:571130222930:web:a6c5eb24858beee981028b"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        // Initialize
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-        window.campusApp = () => {
+        function campusApp() {
             return {
                 isLoggedIn: false, userRole: '', room: '101', view: 'dispatch',
                 loginForm: { user: '', pass: '' },
@@ -168,48 +108,53 @@
                 queue: [],
 
                 init() {
-                    // Real-time Cloud Sync
-                    onSnapshot(collection(db, "roster"), (snapshot) => {
-                        this.roster = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    // Start listening to Firebase Roster
+                    db.collection("roster").onSnapshot((snapshot) => {
+                        this.roster = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     });
-                    onSnapshot(collection(db, "active_queue"), (snapshot) => {
-                        this.queue = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                    // Start listening to Live Queue
+                    db.collection("active_queue").onSnapshot((snapshot) => {
+                        this.queue = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     });
                 },
 
                 login() {
-                    const u = this.loginForm.user.toLowerCase();
-                    if(u === 'admin') { this.isLoggedIn = true; this.userRole = 'admin'; this.view = 'roster'; }
-                    else if(u === 'gate1') { this.isLoggedIn = true; this.userRole = 'dispatch'; this.view = 'dispatch'; }
-                    else if(u === 'teacher1') { this.isLoggedIn = true; this.userRole = 'teacher'; this.room = '101'; this.view = 'teacher'; }
-                    else { alert("Login Error: Account not recognized."); }
+                    if(this.loginForm.user) {
+                        this.isLoggedIn = true;
+                        this.userRole = 'admin';
+                    }
                 },
 
                 async addToRoster() {
                     if(!this.rosterForm.name) return;
-                    await addDoc(collection(db, "roster"), { name: this.rosterForm.name.toUpperCase(), room: this.rosterForm.room });
+                    await db.collection("roster").add({
+                        name: this.rosterForm.name.toUpperCase(),
+                        room: this.rosterForm.room
+                    });
                     this.rosterForm.name = '';
-                },
-
-                async deleteFromRoster(id) {
-                    await deleteDoc(doc(db, "roster", id));
                 },
 
                 async checkIn(type) {
                     const student = this.roster.find(s => s.id === this.selectedStudentId);
                     if(!student) return;
-                    await addDoc(collection(db, "active_queue"), { name: student.name, room: student.room, type: type });
+                    await db.collection("active_queue").add({
+                        name: student.name,
+                        room: student.room,
+                        type: type
+                    });
                     this.selectedStudentId = '';
                 },
 
                 async removeFromQueue(id) {
-                    await deleteDoc(doc(db, "active_queue", id));
+                    await db.collection("active_queue").doc(id).delete();
                 },
 
-                logout() { this.isLoggedIn = false; this.loginForm = { user: '', pass: '' }; },
+                logout() { this.isLoggedIn = false; },
                 get teacherQueue() { return this.queue.filter(q => q.room === this.room); }
             }
         }
     </script>
+
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>
