@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WWK8 | Dismissal Console</title>
+    <title>WWK8 | Dismissal Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         [x-cloak] { display: none !important; }
         body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
         
-        /* LOGIN SCREEN */
+        /* LOGIN SCREEN - BRANDING */
         .login-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; gap: 8%; background: #000; }
-        .logo-side h1 { font-family: 'Bebas Neue', cursive; font-size: clamp(6rem, 15vw, 12rem); line-height: 0.8; font-style: italic; transform: skewX(-10deg); }
+        .logo-side h1 { font-family: 'Bebas Neue', cursive; font-size: clamp(6rem, 15vw, 12rem); line-height: 0.8; font-style: italic; font-weight: 900; transform: skewX(-10deg); text-transform: uppercase; }
         .command-card { background: #0a0a0a; border: 2px solid #FFD700; border-radius: 2.5rem; padding: 3rem; width: 420px; text-align: center; }
 
-        /* THE THREE STYLES */
-        .queue-item { height: 44px; display: grid; grid-template-columns: 50px 70px 1fr; align-items: center; padding: 0 15px; border-radius: 6px; margin-bottom: 4px; font-family: 'Bebas Neue', cursive; }
+        /* ITEM STYLES */
+        .queue-item { height: 48px; display: grid; align-items: center; padding: 0 20px; border-radius: 8px; margin-bottom: 6px; font-weight: 800; text-transform: uppercase; }
+        .projector-grid { grid-template-columns: 50px 80px 1fr; }
+        .dispatch-grid { grid-template-columns: 50px 80px 1fr 40px; }
         
         .type-car { background: #111; border-left: 6px solid #FFD700; }
         .type-bus { background: #000; border: 2px solid #FFD700; color: #FFD700; }
@@ -27,16 +29,13 @@
             background-size: 40px 40px; animation: slide 2s linear infinite; color: #000 !important; 
         }
 
-        /* Dispatch view needs the Delete column back */
-        .dispatch-item { grid-template-columns: 50px 70px 1fr 40px; }
-
         .main-layout { display: grid; grid-template-columns: 240px 1fr; height: 100vh; }
         .content-scroll { overflow-y: auto; height: 100vh; padding-bottom: 100px; }
         
         select.grade-select {
             background: #111; border: 1px solid #333; color: #FFD700;
-            padding: 4px 12px; border-radius: 6px; font-weight: 900;
-            text-transform: uppercase; outline: none; cursor: pointer; font-size: 12px;
+            padding: 6px 16px; border-radius: 8px; font-weight: 900;
+            text-transform: uppercase; outline: none; cursor: pointer; font-size: 14px;
         }
     </style>
 </head>
@@ -44,12 +43,12 @@
 
     <div x-show="!isLoggedIn" class="login-wrapper">
         <div class="logo-side hidden md:block">
-            <div class="text-zinc-500 font-black tracking-[0.5em] text-sm mb-2 uppercase">WWK8 Terminal</div>
-            <h1 class="text-white">WWK8</h1>
-            <div class="text-[#FFD700] font-black text-4xl mt-2 tracking-tighter italic">DISMISSAL</div>
+            <div class="text-zinc-500 font-black tracking-[0.5em] text-sm mb-2 uppercase">Dismissal Manager</div>
+            <h1 class="text-white font-black">WWK8</h1>
+            <div class="text-[#FFD700] font-black text-4xl mt-2 tracking-tighter italic uppercase">Dispatch</div>
         </div>
         <div class="command-card">
-            <select x-model="loginForm.role" class="w-full bg-black border border-zinc-800 p-4 rounded-xl mb-4 font-black text-white text-center">
+            <select x-model="loginForm.role" class="w-full bg-black border border-zinc-800 p-4 rounded-xl mb-4 font-black text-white text-center appearance-none">
                 <option value="" disabled selected>SELECT ROLE</option>
                 <option value="admin">ADMINISTRATOR</option>
                 <option value="dispatch">DISPATCHER</option>
@@ -65,30 +64,28 @@
             <div class="text-white font-black italic text-xl mb-12">WINDING WATERS</div>
             <nav class="flex-1 space-y-2">
                 <button x-show="userRole !== 'teacher'" @click="view = 'dispatch'" :class="view === 'dispatch' ? 'bg-[#FFD700] text-black' : 'text-zinc-500'" class="w-full text-left p-3 rounded-lg font-black text-[10px] uppercase tracking-widest transition">Dispatch</button>
-                <button @click="view = 'teacher'" :class="view === 'teacher' ? 'bg-[#FFD700] text-black' : 'text-zinc-500'" class="w-full text-left p-3 rounded-lg font-black text-[10px] uppercase tracking-widest transition">Projector</button>
+                <button x-show="userRole !== 'dispatch'" @click="view = 'teacher'" :class="view === 'teacher' ? 'bg-[#FFD700] text-black' : 'text-zinc-500'" class="w-full text-left p-3 rounded-lg font-black text-[10px] uppercase tracking-widest transition">Projector</button>
                 <button @click="view = 'admin'" x-show="userRole === 'admin'" :class="view === 'admin' ? 'bg-[#FFD700] text-black' : 'text-zinc-500'" class="w-full text-left p-3 rounded-lg font-black text-[10px] uppercase tracking-widest border border-zinc-900 transition">Admin</button>
             </nav>
-            <button @click="logout()" class="text-zinc-800 font-black text-[9px] uppercase mt-auto">Logout</button>
+            <button @click="logout()" class="text-zinc-800 font-black text-[9px] uppercase mt-auto hover:text-red-500">Logout</button>
         </aside>
 
         <main class="content-scroll">
-            
-            <div x-show="view === 'teacher'" class="p-6">
-                <header class="flex justify-between items-center mb-8">
-                    <div class="flex items-center gap-6">
-                        <h2 class="font-['Bebas_Neue'] text-5xl italic tracking-tighter">LIVE QUEUE</h2>
+            <div x-show="view === 'teacher'" class="p-8">
+                <header class="flex justify-between items-center mb-10">
+                    <h2 class="text-6xl font-black tracking-tighter uppercase italic">LIVE QUEUE</h2>
+                    <div class="flex items-center gap-4">
+                        <span class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Filter Grade:</span>
                         <select x-model="gradeFilter" @change="savePreference()" class="grade-select">
                             <option value="ALL">ALL GRADES</option>
                             <template x-for="g in ['K','1','2','3','4','5','6','7','8']"><option :value="g" x-text="'GRADE ' + g"></option></template>
                         </select>
                     </div>
-                    <div class="text-[10px] font-black text-zinc-700 uppercase tracking-widest">Display Only Mode</div>
                 </header>
-
                 <div class="space-y-1">
                     <template x-for="s in filteredQueue" :key="s.id">
-                        <div :class="{'type-car': s.type === 'car', 'type-bus': s.type === 'bus', 'type-group': s.type === 'group'}" class="queue-item">
-                            <span class="text-lg font-black opacity-40" x-text="s.grade || '-'"></span>
+                        <div :class="{'type-car': s.type === 'car', 'type-bus': s.type === 'bus', 'type-group': s.type === 'group'}" class="queue-item projector-grid">
+                            <span class="text-lg font-black opacity-30" x-text="s.grade || '-'"></span>
                             <span class="text-2xl font-black" x-text="s.tag"></span>
                             <span class="text-2xl font-black italic uppercase" x-text="s.name"></span>
                         </div>
@@ -96,43 +93,54 @@
                 </div>
             </div>
 
-            <div x-show="view === 'dispatch'" class="p-8 max-w-5xl space-y-8">
+            <div x-show="view === 'dispatch'" class="p-8 max-w-6xl space-y-8">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-5xl font-black italic tracking-tighter uppercase">DISPATCH</h2>
+                    <button @click="clearAllQueue()" class="bg-red-600/20 text-red-500 border border-red-600/50 px-6 py-2 rounded-xl font-black text-[11px] uppercase hover:bg-red-600 hover:text-white transition">Clear All</button>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800">
-                        <input x-model="tagInput" @keyup.enter="callByTag()" type="number" placeholder="TAG #" class="w-full bg-black border-2 border-zinc-800 rounded-xl p-3 text-5xl font-['Bebas_Neue'] text-[#FFD700] text-center outline-none">
+                        <input x-model="tagInput" @keyup.enter="callByTag()" type="number" placeholder="TAG #" class="w-full bg-black border-2 border-zinc-800 rounded-xl p-3 text-5xl font-black text-[#FFD700] text-center outline-none">
                         <button @click="callByTag()" class="w-full bg-[#FFD700] text-black font-black p-4 rounded-xl mt-4 uppercase text-xs">Call Tag</button>
                     </div>
                     <div class="bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800">
-                        <input x-model="busInput" @keyup.enter="callBus()" type="text" placeholder="BUS #" class="w-full bg-black border-2 border-zinc-800 rounded-xl p-3 text-5xl font-['Bebas_Neue'] text-white text-center outline-none">
+                        <input x-model="busInput" @keyup.enter="callBus()" type="text" placeholder="BUS #" class="w-full bg-black border-2 border-zinc-800 rounded-xl p-3 text-5xl font-black text-white text-center outline-none">
                         <button @click="callBus()" class="w-full bg-white text-black font-black p-4 rounded-xl mt-4 uppercase text-xs">Call Bus</button>
                     </div>
                 </div>
+
+                <div class="space-y-3">
+                    <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Rapid Units</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                        <template x-for="g in groups" :key="g.id">
+                            <button @click="callGroup(g)" class="bg-zinc-800 hover:bg-[#FFD700] hover:text-black p-4 rounded-xl font-black uppercase text-[10px] transition" x-text="g.name"></button>
+                        </template>
+                    </div>
+                </div>
                 
-                <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Active Queue Control</h3>
-                <div class="space-y-1">
+                <div class="space-y-1 mt-10">
+                    <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-4 border-b border-zinc-900 pb-2">Active Board</h3>
                     <template x-for="s in queue" :key="s.id">
-                        <div :class="{'type-car': s.type === 'car', 'type-bus': s.type === 'bus', 'type-group': s.type === 'group'}" class="queue-item dispatch-item">
-                            <span class="text-lg font-black opacity-40" x-text="s.grade || '-'"></span>
+                        <div :class="{'type-car': s.type === 'car', 'type-bus': s.type === 'bus', 'type-group': s.type === 'group'}" class="queue-item dispatch-grid">
+                            <span class="text-lg font-black opacity-30" x-text="s.grade || '-'"></span>
                             <span class="text-2xl font-black" x-text="s.tag"></span>
                             <span class="text-2xl font-black italic uppercase" x-text="s.name"></span>
-                            <button @click="removeFromQueue(s.id)" class="text-xl text-red-500 font-bold hover:scale-125 transition">×</button>
+                            <button @click="removeFromQueue(s.id)" class="text-2xl text-red-500 font-black">×</button>
                         </div>
                     </template>
                 </div>
             </div>
 
             <div x-show="view === 'admin'" class="p-8">
-                <div class="flex justify-between items-start mb-8 border-b border-zinc-900">
-                    <div class="flex gap-6">
-                        <button @click="adminTab = 'roster'" :class="adminTab === 'roster' ? 'text-[#FFD700] border-b-2 border-[#FFD700]' : 'text-zinc-600'" class="pb-4 font-black uppercase text-xs">Roster</button>
-                        <button @click="adminTab = 'groups'" :class="adminTab === 'groups' ? 'text-[#FFD700] border-b-2 border-[#FFD700]' : 'text-zinc-600'" class="pb-4 font-black uppercase text-xs">Units</button>
-                    </div>
-                    <button @click="clearAllQueue()" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded font-black text-[10px] uppercase hover:bg-red-600 hover:text-white transition">Full System Reset</button>
+                <div class="flex gap-8 mb-8 border-b border-zinc-900">
+                    <button @click="adminTab = 'roster'" :class="adminTab === 'roster' ? 'text-[#FFD700] border-b-2 border-[#FFD700]' : 'text-zinc-600'" class="pb-4 font-black uppercase text-xs">Roster</button>
+                    <button @click="adminTab = 'groups'" :class="adminTab === 'groups' ? 'text-[#FFD700] border-b-2 border-[#FFD700]' : 'text-zinc-600'" class="pb-4 font-black uppercase text-xs">Groups</button>
                 </div>
 
                 <div x-show="adminTab === 'roster'" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800 h-fit">
-                        <input x-model="rosterForm.name" type="text" placeholder="NAME" class="w-full bg-black border border-zinc-800 p-4 rounded-xl font-black text-white uppercase outline-none mb-4">
+                        <input x-model="rosterForm.name" type="text" placeholder="NAME" class="w-full bg-black border border-zinc-800 p-4 rounded-xl font-black text-white uppercase mb-4">
                         <div class="grid grid-cols-2 gap-4 mb-4">
                             <input x-model="rosterForm.tag" type="text" placeholder="TAG" class="w-full bg-black border border-zinc-800 p-4 rounded-xl font-black text-[#FFD700]">
                             <select x-model="rosterForm.grade" class="bg-black border border-zinc-800 p-4 rounded-xl font-black text-white uppercase">
@@ -142,13 +150,27 @@
                         <button @click="isEditing ? forceUpdate() : addToRoster()" class="w-full bg-[#FFD700] text-black font-black p-4 rounded-xl uppercase text-xs" x-text="isEditing ? 'Save' : 'Enroll'"></button>
                     </div>
                     <div class="lg:col-span-2">
-                        <input x-model="searchQuery" type="text" placeholder="SEARCH ROSTER..." class="w-full bg-black border border-zinc-800 p-4 rounded-xl font-black text-xs text-[#FFD700] uppercase mb-4 outline-none">
+                        <input x-model="searchQuery" type="text" placeholder="SEARCH..." class="w-full bg-black border border-zinc-800 p-4 rounded-xl font-black text-xs text-[#FFD700] uppercase mb-4">
                         <template x-for="s in filteredRoster" :key="s.id">
                             <div @click="editStudent(s)" class="bg-zinc-900/30 p-2 rounded-lg border border-zinc-800 flex justify-between items-center mb-1 hover:border-[#FFD700] cursor-pointer">
                                 <div class="flex items-center gap-6"><span class="text-zinc-600 font-black text-[10px] w-4" x-text="s.grade"></span><span class="text-[#FFD700] font-black text-xl w-16" x-text="s.tag"></span><span class="font-black uppercase text-sm" x-text="s.name"></span></div>
                                 <button @click.stop="deleteFromRoster(s.id)" class="text-red-900 text-[9px] font-black">DEL</button>
                             </div>
                         </template>
+                    </div>
+                </div>
+
+                <div x-show="adminTab === 'groups'" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <template x-for="g in groups" :key="g.id">
+                        <div class="bg-zinc-900 p-6 rounded-2xl flex justify-between items-center border border-zinc-800">
+                            <div><h4 class="font-black text-xl uppercase" x-text="g.name"></h4><p class="text-[#FFD700] font-black text-[10px]" x-text="'ID: ' + g.tag"></p></div>
+                            <button @click="deleteGroup(g.id)" class="text-red-900 font-black text-[10px]">DEL</button>
+                        </div>
+                    </template>
+                    <div class="bg-zinc-900/20 border-2 border-dashed border-zinc-800 p-6 rounded-2xl">
+                        <input x-model="groupForm.name" type="text" placeholder="UNIT NAME" class="w-full bg-black border border-zinc-800 p-2 rounded mb-2 text-xs font-bold uppercase">
+                        <input x-model="groupForm.tag" type="text" placeholder="TAG/ID" class="w-full bg-black border border-zinc-800 p-2 rounded mb-2 text-xs font-bold uppercase">
+                        <button @click="addGroup()" class="w-full bg-white text-black font-black py-2 rounded uppercase text-[10px]">Create Unit</button>
                     </div>
                 </div>
             </div>
@@ -168,7 +190,8 @@
                 isLoggedIn: false, userRole: '', view: '', adminTab: 'roster', loginForm: { role: '', pass: '' },
                 gradeFilter: localStorage.getItem('grade_pref') || 'ALL', 
                 roster: [], groups: [], queue: [], tagInput: '', busInput: '', searchQuery: '',
-                rosterForm: { id: '', tag: '', name: '', grade: 'K' }, isEditing: false,
+                rosterForm: { id: '', tag: '', name: '', grade: 'K' },
+                groupForm: { name: '', tag: '' }, isEditing: false,
 
                 init() {
                     db.collection("roster").orderBy("name").onSnapshot(s => this.roster = s.docs.map(d => ({id:d.id, ...d.data()})));
@@ -203,9 +226,15 @@
                     this.busInput = '';
                 },
                 async callGroup(g) { await db.collection("active_queue").add({ name: g.name, tag: g.tag, type: 'group', timestamp: Date.now() }); },
+                async addGroup() {
+                    if(!this.groupForm.name) return;
+                    await db.collection("groups").add({ name: this.groupForm.name.toUpperCase(), tag: this.groupForm.tag.toUpperCase() });
+                    this.groupForm = { name: '', tag: '' };
+                },
+                async deleteGroup(id) { if(confirm("Delete Group?")) await db.collection("groups").doc(id).delete(); },
                 async removeFromQueue(id) { await db.collection("active_queue").doc(id).delete(); },
                 async clearAllQueue() {
-                    if(!confirm("THIS WILL EMPTY THE ENTIRE QUEUE FOR EVERYONE. Proceed?")) return;
+                    if(!confirm("Clear everything?")) return;
                     const snap = await db.collection("active_queue").get();
                     const batch = db.batch(); snap.docs.forEach(doc => batch.delete(doc.ref));
                     await batch.commit();
