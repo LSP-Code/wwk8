@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WWK8 | Cloud Dismissal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        [x-cloak] { display: none !important; }
+        body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+        .projector-font { font-family: 'Bebas Neue', cursive; letter-spacing: 0.05em; }
+        .bg-wwk8-yellow { background-color: #FFD700; }
+        .text-wwk8-yellow { color: #FFD700; }
+        .dismissal-alert { animation: pulse-bg 2s infinite; }
+        @keyframes pulse-bg { 0%, 100% { background-color: #FFD700; } 50% { background-color: #FFF200; } }
+    </style>
+</head>
+<body x-data="campusApp()">
+
+    <div x-show="!isLoggedIn" class="min-h-screen flex items-center justify-center bg-black">
+        <div class="max-w-md w-full bg-zinc-900 p-10 rounded-2xl border border-zinc-800 shadow-2xl">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-wwk8-yellow rounded-xl flex items-center justify-center text-black font-black text-3xl mx-auto mb-4">W</div>
+                <h1 class="text-2xl font-black uppercase tracking-tighter text-white">WWK8 COMMAND</h1>
+                <p class="text-zinc-500 text-sm">Cloud-Synced Logistics</p>
+            </div>
+            <div class="space-y-4">
+                <input x-model="loginForm.user" type="text" placeholder="Username (admin, teacher1, gate1)" class="w-full bg-zinc-800 border border-zinc-700 p-3 rounded text-white outline-none focus:border-yellow-400">
+                <input x-model="loginForm.pass" type="password" placeholder="Password" class="w-full bg-zinc-800 border border-zinc-700 p-3 rounded text-white outline-none focus:border-yellow-400">
+                <button @click="login()" class="w-full bg-wwk8-yellow text-black font-black py-4 rounded-lg uppercase text-sm hover:bg-white transition">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="isLoggedIn" x-cloak class="min-h-screen flex flex-col md:flex-row">
+        
+        <aside class="w-64 bg-zinc-900 border-r border-zinc-800 p-6 flex flex-col">
+            <div class="font-black text-wwk8-yellow mb-10 italic">WINDING WATERS K-8</div>
+            <nav class="flex-1 space-y-2">
+                <template x-if="userRole === 'dispatch' || userRole === 'admin'">
+                    <button @click="view = 'dispatch'" :class="view === 'dispatch' ? 'bg-zinc-800 text-wwk8-yellow' : 'text-zinc-500'" class="w-full text-left p-3 rounded font-bold text-xs uppercase transition">Dispatch</button>
+                </template>
+                <template x-if="userRole === 'teacher' || userRole === 'admin'">
+                    <button @click="view = 'teacher'" :class="view === 'teacher' ? 'bg-zinc-800 text-wwk8-yellow' : 'text-zinc-500'" class="w-full text-left p-3 rounded font-bold text-xs uppercase transition">Projector View</button>
+                </template>
+                <template x-if="userRole === 'admin'">
+                    <button @click="view = 'roster'" :class="view === 'roster' ? 'bg-zinc-800 text-wwk8-yellow' : 'text-zinc-500'" class="w-full text-left p-3 rounded font-bold text-xs uppercase transition">Roster</button>
+                </template>
+            </nav>
+            <div class="pt-4 border-t border-zinc-800">
+                <button @click="logout()" class="w-full bg-zinc-800 text-white text-[10px] py-2 rounded uppercase font-black hover:bg-red-900 transition">Sign Out</button>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-8 overflow-y-auto">
+            
+            <div x-show="view === 'dispatch'">
+                <h2 class="text-4xl font-black mb-8 uppercase tracking-tighter">Dispatch Console</h2>
+                <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 mb-8 max-w-2xl">
+                    <label class="text-[10px] font-black uppercase text-zinc-500 mb-2 block">Check-in Student</label>
+                    <select x-model="selectedStudentId" class="w-full bg-black border border-zinc-700 p-4 rounded text-white mb-4 uppercase font-bold outline-none focus:border-wwk8-yellow">
+                        <option value="">-- Choose Name --</option>
+                        <template x-for="s in roster" :key="s.id">
+                            <option :value="s.id" x-text="s.name + ' (Room ' + s.room + ')'"></option>
+                        </template>
+                    </select>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button @click="checkIn('Car')" class="bg-wwk8-yellow text-black p-4 rounded font-black uppercase hover:bg-white transition">Car Rider</button>
+                        <button @click="checkIn('Bus')" class="bg-zinc-700 text-white p-4 rounded font-black uppercase hover:bg-zinc-600 transition">Bus Loop</button>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="view === 'teacher'" class="h-full">
+                <div class="bg-black border-4 border-zinc-900 rounded-3xl p-12 text-center h-full min-h-[500px] flex flex-col justify-center">
+                    <div x-show="teacherQueue.length === 0">
+                        <h2 class="text-6xl font-black text-zinc-800 uppercase tracking-widest">Monitoring Room <span x-text="room"></span></h2>
+                        <p class="text-zinc-700 uppercase mt-4 font-bold">Waiting for dispatch...</p>
+                    </div>
+                    <template x-for="s in teacherQueue" :key="s.id">
+                        <div class="dismissal-alert p-12 rounded-[3rem] text-black mb-6">
+                            <p class="font-black text-2xl uppercase mb-4" x-text="s.type"></p>
+                            <h2 class="text-[10rem] font-black projector-font leading-none uppercase" x-text="s.name"></h2>
+                            <button @click="removeFromQueue(s.id)" class="mt-8 bg-black text-white px-8 py-2 rounded-full font-bold uppercase text-xs">Clear Name</button>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <div x-show="view === 'roster'">
+                <h2 class="text-4xl font-black mb-8 text-wwk8-yellow italic uppercase tracking-tighter">Database Management</h2>
+                <div class="bg-zinc-900 p-8 rounded-xl border border-zinc-800 max-w-md shadow-2xl">
+                    <div class="mb-4">
+                        <label class="text-[10px] font-black text-zinc-500 uppercase">New Student Name</label>
+                        <input x-model="rosterForm.name" type="text" placeholder="First & Last" class="w-full bg-black border border-zinc-700 p-3 rounded mt-1 uppercase font-bold text-white outline-none focus:border-wwk8-yellow">
+                    </div>
+                    <div class="mb-6">
+                        <label class="text-[10px] font-black text-zinc-500 uppercase">Assigned Room</label>
+                        <select x-model="rosterForm.room" class="w-full bg-black border border-zinc-700 p-3 rounded mt-1 text-white">
+                            <option value="101">Room 101</option>
+                            <option value="102">Room 102</option>
+                            <option value="103">Room 103</option>
+                        </select>
+                    </div>
+                    <button @click="addToRoster()" class="w-full bg-wwk8-yellow text-black font-black py-4 rounded uppercase tracking-widest hover:bg-white transition">Sync to Cloud</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Your specific Firebase Keys
+        const firebaseConfig = {
+          apiKey: "AIzaSyB5OIjvSeCMMMa6Bz4rQmuFE4ET1MQiaKE",
+          authDomain: "echo-dismissal.firebaseapp.com",
+          projectId: "echo-dismissal",
+          storageBucket: "echo-dismissal.firebasestorage.app",
+          messagingSenderId: "571130222930",
+          appId: "1:571130222930:web:a6c5eb24858beee981028b"
+        };
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+
+            window.campusApp = () => {
+                return {
+                    isLoggedIn: false, userRole: '', room: '101', view: 'dispatch',
+                    loginForm: { user: '', pass: '' },
+                    rosterForm: { name: '', room: '101' },
+                    selectedStudentId: '',
+                    roster: [],
+                    queue: [],
+
+                    init() {
+                        // Watch Roster
+                        onSnapshot(collection(db, "roster"), (snapshot) => {
+                            this.roster = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                        });
+                        // Watch Active Queue
+                        onSnapshot(collection(db, "active_queue"), (snapshot) => {
+                            this.queue = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                        });
+                    },
+
+                    login() {
+                        const u = this.loginForm.user;
+                        if(u === 'admin') { this.isLoggedIn = true; this.userRole = 'admin'; this.view = 'roster'; }
+                        else if(u === 'gate1') { this.isLoggedIn = true; this.userRole = 'dispatch'; this.view = 'dispatch'; }
+                        else if(u === 'teacher1') { this.isLoggedIn = true; this.userRole = 'teacher'; this.room = '101'; this.view = 'teacher'; }
+                        else { alert("Invalid User. Use admin, gate1, or teacher1"); }
+                    },
+
+                    async addToRoster() {
+                        if(!this.rosterForm.name) return;
+                        await addDoc(collection(db, "roster"), { name: this.rosterForm.name.toUpperCase(), room: this.rosterForm.room });
+                        this.rosterForm.name = '';
+                    },
+
+                    async checkIn(type) {
+                        const student = this.roster.find(s => s.id === this.selectedStudentId);
+                        if(!student) return;
+                        await addDoc(collection(db, "active_queue"), { name: student.name, room: student.room, type: type });
+                        this.selectedStudentId = '';
+                    },
+
+                    async removeFromQueue(id) {
+                        await deleteDoc(doc(db, "active_queue", id));
+                    },
+
+                    logout() { this.isLoggedIn = false; this.loginForm = { user: '', pass: '' }; },
+                    get teacherQueue() { return this.queue.filter(q => q.room === this.room); }
+                }
+            }
+        } catch (e) {
+            console.error("Firebase failed to load:", e);
+            alert("Connection Error: Please ensure you are connected to the internet.");
+        }
+    </script>
+</body>
+</html>
