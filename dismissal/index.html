@@ -3,158 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WWK8 | Cloud Dismissal</title>
-    
+    <title>WWK8 | Dismissal Console</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-    
     <style>
         [x-cloak] { display: none !important; }
-        body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; }
-        .projector-font { font-family: 'Bebas Neue', cursive; }
-        .bg-wwk8-yellow { background-color: #FFD700; }
+        body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
+        
+        /* LOGIN SCREEN */
+        .login-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; gap: 8%; background: #000; }
+        .logo-side h1 { font-family: 'Bebas Neue', cursive; font-size: clamp(6rem, 15vw, 12rem); line-height: 0.8; font-style: italic; transform: skewX(-10deg); }
+        .command-card { background: #0a0a0a; border: 2px solid #FFD700; border-radius: 2.5rem; padding: 3rem; width: 420px; text-align: center; }
+
+        /* THE THREE STYLES */
+        .queue-item { height: 44px; display: grid; grid-template-columns: 50px 70px 1fr; align-items: center; padding: 0 15px; border-radius: 6px; margin-bottom: 4px; font-family: 'Bebas Neue', cursive; }
+        
+        .type-car { background: #111; border-left: 6px solid #FFD700; }
+        .type-bus { background: #000; border: 2px solid #FFD700; color: #FFD700; }
+        
+        @keyframes slide { from { background-position: 0 0; } to { background-position: 40px 0; } }
+        .type-group { 
+            background: repeating-linear-gradient(45deg, #FFD700, #FFD700 15px, #dab300 15px, #dab300 30px);
+            background-size: 40px 40px; animation: slide 2s linear infinite; color: #000 !important; 
+        }
+
+        /* Dispatch view needs the Delete column back */
+        .dispatch-item { grid-template-columns: 50px 70px 1fr 40px; }
+
+        .main-layout { display: grid; grid-template-columns: 240px 1fr; height: 100vh; }
+        .content-scroll { overflow-y: auto; height: 100vh; padding-bottom: 100px; }
+        
+        select.grade-select {
+            background: #111; border: 1px solid #333; color: #FFD700;
+            padding: 4px 12px; border-radius: 6px; font-weight: 900;
+            text-transform: uppercase; outline: none; cursor: pointer; font-size: 12px;
+        }
     </style>
 </head>
-<body>
+<body x-data="campusApp()" x-init="init()" x-cloak>
 
-    <div x-data="campusApp()" x-cloak>
-        
-        <div x-show="!isLoggedIn" class="min-h-screen flex items-center justify-center bg-black">
-            <div class="max-w-md w-full bg-zinc-900 p-10 rounded-2xl border border-zinc-800">
-                <div class="text-center mb-8">
-                    <div class="w-16 h-16 bg-wwk8-yellow rounded-xl flex items-center justify-center text-black font-black text-3xl mx-auto mb-4">W</div>
-                    <h1 class="text-2xl font-black text-white uppercase">WWK8 Command</h1>
-                </div>
-                <div class="space-y-4">
-                    <input x-model="loginForm.user" type="text" placeholder="Username" class="w-full bg-zinc-800 border border-zinc-700 p-3 rounded text-white outline-none">
-                    <input x-model="loginForm.pass" type="password" placeholder="Password" class="w-full bg-zinc-800 border border-zinc-700 p-3 rounded text-white outline-none">
-                    <button @click="login()" class="w-full bg-wwk8-yellow text-black font-black py-4 rounded-lg uppercase">Login</button>
+    <div x-show="!isLoggedIn" class="login-wrapper">
+        <div class="logo-side hidden md:block">
+            <div class="text-zinc-500 font-black tracking-[0.5em] text-sm mb-2 uppercase">WWK8 Terminal</div>
+            <h1 class="text-white">WWK8</h1>
+            <div class="text-[#FFD700] font-black text-4xl mt-2 tracking-tighter italic">DISMISSAL</div>
+        </div>
+        <div class="command-card">
+            <select x-model="loginForm.role" class="w-full bg-black border border-zinc-800 p-4 rounded-xl mb-4 font-black text-white text-center">
+                <option value="" disabled selected>SELECT ROLE</option>
+                <option value="admin">ADMINISTRATOR</option>
+                <option value="dispatch">DISPATCHER</option>
+                <option value="teacher">PROJECTOR</option>
+            </select>
+            <input x-model="loginForm.pass" @keyup.enter="login()" type="password" placeholder="ACCESS KEY" class="w-full bg-black border border-zinc-800 p-4 rounded-xl mb-6 text-center font-black outline-none text-[#FFD700]">
+            <button @click="login()" class="w-full bg-[#FFD700] text-black p-4 rounded-xl font-black uppercase tracking-widest hover:bg-white transition">Initialize</button>
+        </div>
+    </div>
+
+    <div x-show="isLoggedIn" class="main-layout">
+        <aside class="bg-[#050505] border-r border-zinc-900 p-6 flex flex-col">
+            <div class="text-white font-black italic text-xl mb-12">WINDING WATERS</div>
+            <nav class="flex-1 space-y-2">
+                <button x-show="userRole !== 'teacher'" @click="view = 'dispatch'" :class="view === 'dispatch' ? 'bg-[#FFD700] text-black' : 'text-zinc-500'" class="w-full text-left p-3 rounded-lg font-black text-[10px] uppercase tracking-widest transition">Dispatch</button>
+                <button @click="view = 'teacher'" :class="view === 'teacher' ? 'bg-[#FFD700] text-black' : 'text-zinc-500'" class="w-full text-left p-3 rounded-lg font-black text-[10px] uppercase tracking-widest transition">Projector</button>
+                <button @click="view = 'admin'" x-show="userRole === 'admin'" :class="view === 'admin' ? 'bg-[#FFD700] text-black' : 'text-zinc-500'" class="w-full text-left p-3 rounded-lg font-black text-[10px] uppercase tracking-widest border border-zinc-900 transition">Admin</button>
+            </nav>
+            <button @click="logout()" class="text-zinc-800 font-black text-[9px] uppercase mt-auto">Logout</button>
+        </aside>
+
+        <main class="content-scroll">
+            
+            <div x-show="view === 'teacher'" class="p-6">
+                <header class="flex justify-between items-center mb-8">
+                    <div class="flex items-center gap-6">
+                        <h2 class="font-['Bebas_Neue'] text-5xl italic tracking-tighter">LIVE QUEUE</h2>
+                        <select x-model="gradeFilter" @change="savePreference()" class="grade-select">
+                            <option value="ALL">ALL GRADES</option>
+                            <template x-for="g in ['K','1','2','3','4','5','6','7','8']"><option :value="g" x-text="'GRADE ' + g"></option></template>
+                        </select>
+                    </div>
+                    <div class="text-[10px] font-black text-zinc-700 uppercase tracking-widest">Display Only Mode</div>
+                </header>
+
+                <div class="space-y-1">
+                    <template x-for="s in filteredQueue" :key="s.id">
+                        <div :class="{'type-car': s.type === 'car', 'type-bus': s.type === 'bus', 'type-group': s.type === 'group'}" class="queue-item">
+                            <span class="text-lg font-black opacity-40" x-text="s.grade || '-'"></span>
+                            <span class="text-2xl font-black" x-text="s.tag"></span>
+                            <span class="text-2xl font-black italic uppercase" x-text="s.name"></span>
+                        </div>
+                    </template>
                 </div>
             </div>
-        </div>
 
-        <div x-show="isLoggedIn" class="min-h-screen flex flex-col md:flex-row">
-            <aside class="w-64 bg-zinc-900 border-r border-zinc-800 p-6 flex flex-col">
-                <div class="font-black text-wwk8-yellow mb-10 italic">WINDING WATERS</div>
-                <nav class="flex-1 space-y-2">
-                    <button @click="view = 'dispatch'" :class="view === 'dispatch' ? 'bg-zinc-800 text-wwk8-yellow' : 'text-zinc-500'" class="w-full text-left p-3 rounded font-bold text-xs uppercase">Dispatch</button>
-                    <button @click="view = 'teacher'" :class="view === 'teacher' ? 'bg-zinc-800 text-wwk8-yellow' : 'text-zinc-500'" class="w-full text-left p-3 rounded font-bold text-xs uppercase">Projector View</button>
-                    <button @click="view = 'roster'" :class="view === 'roster' ? 'bg-zinc-800 text-wwk8-yellow' : 'text-zinc-500'" class="w-full text-left p-3 rounded font-bold text-xs uppercase">Manage Roster</button>
-                </nav>
-                <button @click="logout()" class="w-full bg-zinc-800 text-white text-[10px] py-2 rounded uppercase font-black">Sign Out</button>
-            </aside>
-
-            <main class="flex-1 p-8 overflow-y-auto">
-                <div x-show="view === 'dispatch'">
-                    <h2 class="text-4xl font-black mb-8 italic">DISPATCH</h2>
-                    <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 max-w-md">
-                        <select x-model="selectedStudentId" class="w-full bg-black border border-zinc-700 p-4 rounded text-white mb-4 uppercase font-bold">
-                            <option value="">-- Select Student --</option>
-                            <template x-for="s in roster" :key="s.id">
-                                <option :value="s.id" x-text="s.name"></option>
-                            </template>
-                        </select>
-                        <button @click="checkIn('Car Rider')" class="w-full bg-wwk8-yellow text-black p-4 rounded font-black uppercase mb-2">Dismiss to Car</button>
+            <div x-show="view === 'dispatch'" class="p-8 max-w-5xl space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800">
+                        <input x-model="tagInput" @keyup.enter="callByTag()" type="number" placeholder="TAG #" class="w-full bg-black border-2 border-zinc-800 rounded-xl p-3 text-5xl font-['Bebas_Neue'] text-[#FFD700] text-center outline-none">
+                        <button @click="callByTag()" class="w-full bg-[#FFD700] text-black font-black p-4 rounded-xl mt-4 uppercase text-xs">Call Tag</button>
+                    </div>
+                    <div class="bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800">
+                        <input x-model="busInput" @keyup.enter="callBus()" type="text" placeholder="BUS #" class="w-full bg-black border-2 border-zinc-800 rounded-xl p-3 text-5xl font-['Bebas_Neue'] text-white text-center outline-none">
+                        <button @click="callBus()" class="w-full bg-white text-black font-black p-4 rounded-xl mt-4 uppercase text-xs">Call Bus</button>
                     </div>
                 </div>
+                
+                <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Active Queue Control</h3>
+                <div class="space-y-1">
+                    <template x-for="s in queue" :key="s.id">
+                        <div :class="{'type-car': s.type === 'car', 'type-bus': s.type === 'bus', 'type-group': s.type === 'group'}" class="queue-item dispatch-item">
+                            <span class="text-lg font-black opacity-40" x-text="s.grade || '-'"></span>
+                            <span class="text-2xl font-black" x-text="s.tag"></span>
+                            <span class="text-2xl font-black italic uppercase" x-text="s.name"></span>
+                            <button @click="removeFromQueue(s.id)" class="text-xl text-red-500 font-bold hover:scale-125 transition">×</button>
+                        </div>
+                    </template>
+                </div>
+            </div>
 
-                <div x-show="view === 'teacher'" class="h-full">
-                    <div class="bg-black border-4 border-zinc-900 rounded-3xl p-12 text-center h-full min-h-[400px] flex flex-col justify-center">
-                        <template x-for="s in teacherQueue" :key="s.id">
-                            <div class="bg-wwk8-yellow p-12 rounded-[3rem] text-black mb-6">
-                                <h2 class="text-9xl font-black projector-font leading-none uppercase" x-text="s.name"></h2>
-                                <button @click="removeFromQueue(s.id)" class="mt-8 bg-black text-white px-8 py-2 rounded-full font-bold uppercase text-xs text-zinc-400">Clear</button>
+            <div x-show="view === 'admin'" class="p-8">
+                <div class="flex justify-between items-start mb-8 border-b border-zinc-900">
+                    <div class="flex gap-6">
+                        <button @click="adminTab = 'roster'" :class="adminTab === 'roster' ? 'text-[#FFD700] border-b-2 border-[#FFD700]' : 'text-zinc-600'" class="pb-4 font-black uppercase text-xs">Roster</button>
+                        <button @click="adminTab = 'groups'" :class="adminTab === 'groups' ? 'text-[#FFD700] border-b-2 border-[#FFD700]' : 'text-zinc-600'" class="pb-4 font-black uppercase text-xs">Units</button>
+                    </div>
+                    <button @click="clearAllQueue()" class="bg-red-600/20 text-red-500 border border-red-600/50 px-4 py-2 rounded font-black text-[10px] uppercase hover:bg-red-600 hover:text-white transition">Full System Reset</button>
+                </div>
+
+                <div x-show="adminTab === 'roster'" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800 h-fit">
+                        <input x-model="rosterForm.name" type="text" placeholder="NAME" class="w-full bg-black border border-zinc-800 p-4 rounded-xl font-black text-white uppercase outline-none mb-4">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <input x-model="rosterForm.tag" type="text" placeholder="TAG" class="w-full bg-black border border-zinc-800 p-4 rounded-xl font-black text-[#FFD700]">
+                            <select x-model="rosterForm.grade" class="bg-black border border-zinc-800 p-4 rounded-xl font-black text-white uppercase">
+                                <template x-for="g in ['K','1','2','3','4','5','6','7','8']"><option :value="g" x-text="'Grade ' + g"></option></template>
+                            </select>
+                        </div>
+                        <button @click="isEditing ? forceUpdate() : addToRoster()" class="w-full bg-[#FFD700] text-black font-black p-4 rounded-xl uppercase text-xs" x-text="isEditing ? 'Save' : 'Enroll'"></button>
+                    </div>
+                    <div class="lg:col-span-2">
+                        <input x-model="searchQuery" type="text" placeholder="SEARCH ROSTER..." class="w-full bg-black border border-zinc-800 p-4 rounded-xl font-black text-xs text-[#FFD700] uppercase mb-4 outline-none">
+                        <template x-for="s in filteredRoster" :key="s.id">
+                            <div @click="editStudent(s)" class="bg-zinc-900/30 p-2 rounded-lg border border-zinc-800 flex justify-between items-center mb-1 hover:border-[#FFD700] cursor-pointer">
+                                <div class="flex items-center gap-6"><span class="text-zinc-600 font-black text-[10px] w-4" x-text="s.grade"></span><span class="text-[#FFD700] font-black text-xl w-16" x-text="s.tag"></span><span class="font-black uppercase text-sm" x-text="s.name"></span></div>
+                                <button @click.stop="deleteFromRoster(s.id)" class="text-red-900 text-[9px] font-black">DEL</button>
                             </div>
                         </template>
-                        <div x-show="teacherQueue.length === 0" class="text-zinc-800 font-black text-4xl uppercase tracking-widest italic">Monitoring Room 101</div>
                     </div>
                 </div>
-
-                <div x-show="view === 'roster'">
-                    <h2 class="text-4xl font-black mb-8 text-wwk8-yellow italic">ROSTER</h2>
-                    <div class="bg-zinc-900 p-6 rounded-xl border border-zinc-800 max-w-md">
-                        <input x-model="rosterForm.name" type="text" placeholder="STUDENT NAME" class="w-full bg-black border border-zinc-700 p-3 rounded mb-4 uppercase font-bold text-white">
-                        <button @click="addToRoster()" class="w-full bg-wwk8-yellow text-black font-black py-4 rounded uppercase">Add to Cloud</button>
-                    </div>
-                </div>
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyB5OIjvSeCMMMa6Bz4rQmuFE4ET1MQiaKE",
-            authDomain: "echo-dismissal.firebaseapp.com",
-            projectId: "echo-dismissal",
-            storageBucket: "echo-dismissal.firebasestorage.app",
-            messagingSenderId: "571130222930",
-            appId: "1:571130222930:web:a6c5eb24858beee981028b"
-        };
-
-        // Initialize
+        const firebaseConfig = { apiKey: "AIzaSyB5OIjvSeCMMMa6Bz4rQmuFE4ET1MQiaKE", authDomain: "echo-dismissal.firebaseapp.com", projectId: "echo-dismissal", storageBucket: "echo-dismissal.firebasestorage.app", messagingSenderId: "571130222930", appId: "1:571130222930:web:a6c5eb24858beee981028b" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const KEYS = { admin: "WWK8ADMIN", dispatch: "WWK8DISP", teacher: "WWK8VIEW" };
 
         function campusApp() {
             return {
-                isLoggedIn: false, userRole: '', room: '101', view: 'dispatch',
-                loginForm: { user: '', pass: '' },
-                rosterForm: { name: '', room: '101' },
-                selectedStudentId: '',
-                roster: [],
-                queue: [],
+                isLoggedIn: false, userRole: '', view: '', adminTab: 'roster', loginForm: { role: '', pass: '' },
+                gradeFilter: localStorage.getItem('grade_pref') || 'ALL', 
+                roster: [], groups: [], queue: [], tagInput: '', busInput: '', searchQuery: '',
+                rosterForm: { id: '', tag: '', name: '', grade: 'K' }, isEditing: false,
 
                 init() {
-                    // Start listening to Firebase Roster
-                    db.collection("roster").onSnapshot((snapshot) => {
-                        this.roster = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    });
-                    // Start listening to Live Queue
-                    db.collection("active_queue").onSnapshot((snapshot) => {
-                        this.queue = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    db.collection("roster").orderBy("name").onSnapshot(s => this.roster = s.docs.map(d => ({id:d.id, ...d.data()})));
+                    db.collection("groups").orderBy("name").onSnapshot(s => this.groups = s.docs.map(d => ({id:d.id, ...d.data()})));
+                    db.collection("active_queue").orderBy("timestamp", "desc").onSnapshot(s => this.queue = s.docs.map(d => ({id:d.id, ...d.data()})));
+                },
+                get filteredQueue() {
+                    return this.queue.filter(item => {
+                        if (this.gradeFilter === 'ALL' || item.type !== 'car') return true;
+                        return item.grade === this.gradeFilter;
                     });
                 },
-
+                get filteredRoster() {
+                    return this.roster.filter(r => r.name.toLowerCase().includes(this.searchQuery.toLowerCase()) || r.tag.includes(this.searchQuery));
+                },
                 login() {
-                    if(this.loginForm.user) {
-                        this.isLoggedIn = true;
-                        this.userRole = 'admin';
+                    if (this.loginForm.pass.toUpperCase() === KEYS[this.loginForm.role]) {
+                        this.isLoggedIn = true; this.userRole = this.loginForm.role; 
+                        this.view = (this.userRole === 'admin') ? 'admin' : (this.userRole === 'dispatch' ? 'dispatch' : 'teacher');
                     }
                 },
-
+                logout() { this.isLoggedIn = false; this.loginForm.pass = ''; },
+                savePreference() { localStorage.setItem('grade_pref', this.gradeFilter); },
+                async callByTag() {
+                    const s = this.roster.find(x => x.tag === this.tagInput);
+                    if(s) await db.collection("active_queue").add({ name: s.name, tag: s.tag, grade: s.grade, timestamp: Date.now(), type: 'car' });
+                    this.tagInput = '';
+                },
+                async callBus() {
+                    if(!this.busInput) return;
+                    await db.collection("active_queue").add({ name: `BUS ${this.busInput.toUpperCase()}`, tag: 'BUS', type: 'bus', timestamp: Date.now() });
+                    this.busInput = '';
+                },
+                async callGroup(g) { await db.collection("active_queue").add({ name: g.name, tag: g.tag, type: 'group', timestamp: Date.now() }); },
+                async removeFromQueue(id) { await db.collection("active_queue").doc(id).delete(); },
+                async clearAllQueue() {
+                    if(!confirm("THIS WILL EMPTY THE ENTIRE QUEUE FOR EVERYONE. Proceed?")) return;
+                    const snap = await db.collection("active_queue").get();
+                    const batch = db.batch(); snap.docs.forEach(doc => batch.delete(doc.ref));
+                    await batch.commit();
+                },
+                editStudent(s) { this.isEditing = true; this.rosterForm = {...s}; },
                 async addToRoster() {
-                    if(!this.rosterForm.name) return;
-                    await db.collection("roster").add({
-                        name: this.rosterForm.name.toUpperCase(),
-                        room: this.rosterForm.room
-                    });
-                    this.rosterForm.name = '';
+                    await db.collection("roster").add({ name: this.rosterForm.name.toUpperCase(), tag: this.rosterForm.tag, grade: this.rosterForm.grade });
+                    this.rosterForm = {id:'', tag:'', name:'', grade:'K'};
                 },
-
-                async checkIn(type) {
-                    const student = this.roster.find(s => s.id === this.selectedStudentId);
-                    if(!student) return;
-                    await db.collection("active_queue").add({
-                        name: student.name,
-                        room: student.room,
-                        type: type
-                    });
-                    this.selectedStudentId = '';
+                async forceUpdate() {
+                    const {id, ...data} = this.rosterForm;
+                    await db.collection("roster").doc(id).update({ name: data.name.toUpperCase(), tag: data.tag, grade: data.grade });
+                    this.isEditing = false; this.rosterForm = {id:'', tag:'', name:'', grade:'K'};
                 },
-
-                async removeFromQueue(id) {
-                    await db.collection("active_queue").doc(id).delete();
-                },
-
-                logout() { this.isLoggedIn = false; },
-                get teacherQueue() { return this.queue.filter(q => q.room === this.room); }
+                async deleteFromRoster(id) { if(confirm("Delete student?")) await db.collection("roster").doc(id).delete(); }
             }
         }
     </script>
-
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>
