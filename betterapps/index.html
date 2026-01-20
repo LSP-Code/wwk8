@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Better Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --hover-glow: rgba(0, 255, 200, 0.4);
+            --text-main: #ffffff;
+            --accent-color: #00ffc8; /* Neon Cyan */
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* The Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        /* THE BIG HEADER MESSAGE */
+        header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: -webkit-linear-gradient(#fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 40px;
+            color: var(--accent-color);
+        }
+
+        /* Search Bar (Keep it just in case you add more later) */
+        .search-wrapper {
+            margin-bottom: 60px;
+        }
+
+        input[type="text"] {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--card-border);
+            padding: 15px 30px;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 50px;
+            color: white;
+            font-size: 18px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px var(--hover-glow);
+        }
+
+        /* The Grid */
+        .app-grid {
+            display: flex; /* Changed to flex to center the single app */
+            justify-content: center;
+            gap: 30px;
+            perspective: 1000px;
+        }
+
+        /* The Cards */
+        .app-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            width: 250px; /* Made it slightly bigger since it's the only one */
+            height: 250px;
+        }
+
+        .app-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 40px rgba(0, 255, 200, 0.2);
+        }
+
+        .icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(255,255,255,0.5);
+        }
+
+        .name {
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .desc {
+            font-size: 12px;
+            margin-top: 10px;
+            color: #aaa;
+        }
+
+        /* Footer */
+        footer {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            left: 0;
+            opacity: 0.5;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header>
+            <h1>Hi, These are the apps that I made that are better than the school ones :)</h1>
+            <p>Welcome to the superior dashboard.</p>
+        </header>
+
+        <div class="search-wrapper">
+            <input type="text" id="searchInput" placeholder="Search my apps..." onkeyup="filterApps()">
+        </div>
+
+        <div class="app-grid" id="appGrid">
+            
+            <a href="learnquest.html" class="app-card">
+                <div class="icon">⚔️</div>
+                <div class="name">Learn Quest</div>
+                <div class="desc">Like i-Ready but actually fun</div>
+            </a>
+
+        </div>
+
+        <footer>
+            Created by Me &bull; 100% Better
+        </footer>
+
+    </div>
+
+    <script>
+        function filterApps() {
+            // Standard search logic
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toUpperCase();
+            const grid = document.getElementById('appGrid');
+            const cards = grid.getElementsByClassName('app-card');
+
+            for (let i = 0; i < cards.length; i++) {
+                const nameDiv = cards[i].getElementsByClassName('name')[0];
+                const txtValue = nameDiv.textContent || nameDiv.innerText;
+                
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    cards[i].style.display = "flex";
+                } else {
+                    cards[i].style.display = "none";
+                }
+            }
+        }
+    </script>
+</body>
+</html>
