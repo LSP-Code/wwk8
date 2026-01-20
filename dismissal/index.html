@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WWK8 | Dismissal Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
@@ -10,15 +10,50 @@
         [x-cloak] { display: none !important; }
         body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
         
-        /* LOGIN SCREEN - BRANDING */
-        .login-wrapper { height: 100vh; display: flex; align-items: center; justify-content: center; gap: 8%; background: #000; }
-        .logo-side h1 { font-family: 'Bebas Neue', cursive; font-size: clamp(6rem, 15vw, 12rem); line-height: 0.8; font-style: italic; font-weight: 900; transform: skewX(-10deg); text-transform: uppercase; }
-        .command-card { background: #0a0a0a; border: 2px solid #FFD700; border-radius: 2.5rem; padding: 3rem; width: 420px; text-align: center; }
+        /* LOGIN SCREEN - RESPONSIVE SIDE-BY-SIDE */
+        .login-wrapper { 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; /* Mobile default */
+            align-items: center; 
+            justify-content: center; 
+            gap: 2rem; 
+            background: #000; 
+            padding: 20px; 
+        }
+
+        @media (min-width: 768px) {
+            .login-wrapper { 
+                flex-direction: row; /* Desktop Side-by-Side */
+                gap: 8%; 
+            }
+            .logo-side { text-align: left; }
+        }
+
+        .logo-side h1 { 
+            font-family: 'Bebas Neue', cursive; 
+            font-size: clamp(4.5rem, 12vw, 12rem); 
+            line-height: 0.8; 
+            font-style: italic; 
+            font-weight: 900; 
+            transform: skewX(-10deg); 
+            text-transform: uppercase; 
+        }
+
+        .command-card { 
+            background: #0a0a0a; 
+            border: 2px solid #FFD700; 
+            border-radius: 2.5rem; 
+            padding: 2.5rem; 
+            width: 100%; 
+            max-width: 420px; 
+            text-align: center; 
+        }
 
         /* ITEM STYLES */
-        .queue-item { height: 48px; display: grid; align-items: center; padding: 0 20px; border-radius: 8px; margin-bottom: 6px; font-weight: 800; text-transform: uppercase; }
-        .projector-grid { grid-template-columns: 50px 80px 1fr; }
-        .dispatch-grid { grid-template-columns: 50px 80px 1fr 40px; }
+        .queue-item { min-height: 48px; display: grid; align-items: center; padding: 8px 15px; border-radius: 8px; margin-bottom: 6px; font-weight: 800; text-transform: uppercase; }
+        .projector-grid { grid-template-columns: 40px 60px 1fr; }
+        .dispatch-grid { grid-template-columns: 40px 60px 1fr 40px; }
         
         .type-car { background: #111; border-left: 6px solid #FFD700; }
         .type-bus { background: #000; border: 2px solid #FFD700; color: #FFD700; }
@@ -29,131 +64,136 @@
             background-size: 40px 40px; animation: slide 2s linear infinite; color: #000 !important; 
         }
 
-        .main-layout { display: grid; grid-template-columns: 240px 1fr; height: 100vh; }
-        .content-scroll { overflow-y: auto; height: 100vh; padding-bottom: 100px; }
-        
-        select.grade-select {
-            background: #111; border: 1px solid #333; color: #FFD700;
-            padding: 6px 16px; border-radius: 8px; font-weight: 900;
-            text-transform: uppercase; outline: none; cursor: pointer; font-size: 14px;
+        /* MAIN APP LAYOUT */
+        .main-layout { display: flex; flex-direction: column; height: 100vh; }
+        @media (min-width: 768px) {
+            .main-layout { display: grid; grid-template-columns: 240px 1fr; }
         }
+
+        .content-scroll { flex: 1; overflow-y: auto; padding-bottom: 100px; }
+        
+        /* NAVIGATION */
+        .mobile-nav { display: flex; border-top: 1px solid #222; background: #050505; height: 70px; flex-shrink: 0; }
+        @media (min-width: 768px) { .mobile-nav { display: none; } }
     </style>
 </head>
 <body x-data="campusApp()" x-init="init()" x-cloak>
 
     <div x-show="!isLoggedIn" class="login-wrapper">
-        <div class="logo-side hidden md:block">
-            <div class="text-zinc-500 font-black tracking-[0.5em] text-sm mb-2 uppercase">Dismissal Manager</div>
+        <div class="logo-side text-center">
+            <div class="text-zinc-500 font-black tracking-[0.4em] text-[10px] md:text-xs mb-2 uppercase">Dismissal Manager</div>
             <h1 class="text-white font-black">WWK8</h1>
-            <div class="text-[#FFD700] font-black text-4xl mt-2 tracking-tighter italic uppercase">Dispatch</div>
+            <div class="text-[#FFD700] font-black text-3xl md:text-5xl mt-2 tracking-tighter italic uppercase">Dispatch</div>
         </div>
+
         <div class="command-card">
-            <select x-model="loginForm.role" class="w-full bg-black border border-zinc-800 p-4 rounded-xl mb-4 font-black text-white text-center appearance-none">
+            <select x-model="loginForm.role" class="w-full bg-black border border-zinc-800 p-4 rounded-xl mb-4 font-black text-white text-center appearance-none outline-none">
                 <option value="" disabled selected>SELECT ROLE</option>
                 <option value="admin">ADMINISTRATOR</option>
                 <option value="dispatch">DISPATCHER</option>
                 <option value="teacher">PROJECTOR</option>
             </select>
             <input x-model="loginForm.pass" @keyup.enter="login()" type="password" placeholder="ACCESS KEY" class="w-full bg-black border border-zinc-800 p-4 rounded-xl mb-6 text-center font-black outline-none text-[#FFD700]">
-            <button @click="login()" class="w-full bg-[#FFD700] text-black p-4 rounded-xl font-black uppercase tracking-widest hover:bg-white transition">Initialize</button>
+            <button @click="login()" class="w-full bg-[#FFD700] text-black p-4 rounded-xl font-black uppercase tracking-widest active:scale-95 transition">Initialize</button>
         </div>
     </div>
 
     <div x-show="isLoggedIn" class="main-layout">
-        <aside class="bg-[#050505] border-r border-zinc-900 p-6 flex flex-col">
+        
+        <aside class="hidden md:flex bg-[#050505] border-r border-zinc-900 p-6 flex-col">
             <div class="text-white font-black italic text-xl mb-12">WINDING WATERS</div>
             <nav class="flex-1 space-y-2">
                 <button x-show="userRole !== 'teacher'" @click="view = 'dispatch'" :class="view === 'dispatch' ? 'bg-[#FFD700] text-black' : 'text-zinc-500'" class="w-full text-left p-3 rounded-lg font-black text-[10px] uppercase tracking-widest transition">Dispatch</button>
                 <button x-show="userRole !== 'dispatch'" @click="view = 'teacher'" :class="view === 'teacher' ? 'bg-[#FFD700] text-black' : 'text-zinc-500'" class="w-full text-left p-3 rounded-lg font-black text-[10px] uppercase tracking-widest transition">Projector</button>
-                <button @click="view = 'admin'" x-show="userRole === 'admin'" :class="view === 'admin' ? 'bg-[#FFD700] text-black' : 'text-zinc-500'" class="w-full text-left p-3 rounded-lg font-black text-[10px] uppercase tracking-widest border border-zinc-900 transition">Admin</button>
+                <button @click="view = 'admin'" x-show="userRole === 'admin'" :class="view === 'admin' ? 'bg-[#FFD700] text-black' : 'text-zinc-600'" class="w-full text-left p-3 rounded-lg font-black text-[10px] uppercase tracking-widest border border-zinc-900 transition">Admin</button>
             </nav>
             <button @click="logout()" class="text-zinc-800 font-black text-[9px] uppercase mt-auto hover:text-red-500">Logout</button>
         </aside>
 
         <main class="content-scroll">
-            <div x-show="view === 'teacher'" class="p-8">
-                <header class="flex justify-between items-center mb-10">
-                    <h2 class="text-6xl font-black tracking-tighter uppercase italic">LIVE QUEUE</h2>
-                    <div class="flex items-center gap-4">
-                        <span class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Filter Grade:</span>
-                        <select x-model="gradeFilter" @change="savePreference()" class="grade-select">
-                            <option value="ALL">ALL GRADES</option>
-                            <template x-for="g in ['K','1','2','3','4','5','6','7','8']"><option :value="g" x-text="'GRADE ' + g"></option></template>
+            <div x-show="view === 'teacher'" class="p-6 md:p-10">
+                <header class="flex flex-col md:flex-row md:justify-between md:items-center gap-6 mb-10">
+                    <h2 class="text-5xl md:text-7xl font-black tracking-tighter uppercase italic">LIVE QUEUE</h2>
+                    <div class="flex items-center gap-4 bg-zinc-900/50 p-2 rounded-xl border border-zinc-800">
+                        <span class="text-[10px] font-black text-zinc-500 uppercase px-2">Grade:</span>
+                        <select x-model="gradeFilter" @change="savePreference()" class="bg-black border border-zinc-700 text-[#FFD700] py-2 px-4 rounded-lg font-black text-xs uppercase outline-none">
+                            <option value="ALL">ALL</option>
+                            <template x-for="g in ['K','1','2','3','4','5','6','7','8']"><option :value="g" x-text="g"></option></template>
                         </select>
                     </div>
                 </header>
                 <div class="space-y-1">
                     <template x-for="s in filteredQueue" :key="s.id">
                         <div :class="{'type-car': s.type === 'car', 'type-bus': s.type === 'bus', 'type-group': s.type === 'group'}" class="queue-item projector-grid">
-                            <span class="text-lg font-black opacity-30" x-text="s.grade || '-'"></span>
-                            <span class="text-2xl font-black" x-text="s.tag"></span>
-                            <span class="text-2xl font-black italic uppercase" x-text="s.name"></span>
+                            <span class="text-xs md:text-lg font-black opacity-30" x-text="s.grade || '-'"></span>
+                            <span class="text-lg md:text-2xl font-black" x-text="s.tag"></span>
+                            <span class="text-lg md:text-2xl font-black italic uppercase truncate" x-text="s.name"></span>
                         </div>
                     </template>
                 </div>
             </div>
 
-            <div x-show="view === 'dispatch'" class="p-8 max-w-6xl space-y-8">
+            <div x-show="view === 'dispatch'" class="p-4 md:p-8 max-w-6xl space-y-6">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-5xl font-black italic tracking-tighter uppercase">DISPATCH</h2>
-                    <button @click="clearAllQueue()" class="bg-red-600/20 text-red-500 border border-red-600/50 px-6 py-2 rounded-xl font-black text-[11px] uppercase hover:bg-red-600 hover:text-white transition">Clear All</button>
+                    <h2 class="text-4xl md:text-5xl font-black italic tracking-tighter">DISPATCH</h2>
+                    <button @click="clearAllQueue()" class="bg-red-600/10 text-red-500 border border-red-600/30 px-5 py-2 rounded-lg font-black text-[10px] uppercase hover:bg-red-600 hover:text-white transition">Clear Board</button>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800">
-                        <input x-model="tagInput" @keyup.enter="callByTag()" type="number" placeholder="TAG #" class="w-full bg-black border-2 border-zinc-800 rounded-xl p-3 text-5xl font-black text-[#FFD700] text-center outline-none">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-zinc-900/40 p-5 rounded-2xl border border-zinc-800">
+                        <input x-model="tagInput" @keyup.enter="callByTag()" type="number" inputmode="numeric" placeholder="TAG #" class="w-full bg-black border-2 border-zinc-800 rounded-xl p-4 text-5xl font-black text-[#FFD700] text-center outline-none">
                         <button @click="callByTag()" class="w-full bg-[#FFD700] text-black font-black p-4 rounded-xl mt-4 uppercase text-xs">Call Tag</button>
                     </div>
-                    <div class="bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800">
-                        <input x-model="busInput" @keyup.enter="callBus()" type="text" placeholder="BUS #" class="w-full bg-black border-2 border-zinc-800 rounded-xl p-3 text-5xl font-black text-white text-center outline-none">
+                    <div class="bg-zinc-900/40 p-5 rounded-2xl border border-zinc-800">
+                        <input x-model="busInput" @keyup.enter="callBus()" type="text" placeholder="BUS #" class="w-full bg-black border-2 border-zinc-800 rounded-xl p-4 text-5xl font-black text-white text-center outline-none">
                         <button @click="callBus()" class="w-full bg-white text-black font-black p-4 rounded-xl mt-4 uppercase text-xs">Call Bus</button>
                     </div>
                 </div>
 
                 <div class="space-y-3">
-                    <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Rapid Units</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    <h3 class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Rapid Call Units</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2">
                         <template x-for="g in groups" :key="g.id">
-                            <button @click="callGroup(g)" class="bg-zinc-800 hover:bg-[#FFD700] hover:text-black p-4 rounded-xl font-black uppercase text-[10px] transition" x-text="g.name"></button>
+                            <button @click="callGroup(g)" class="bg-zinc-800 hover:bg-[#FFD700] hover:text-black p-4 rounded-lg font-black uppercase text-[10px] transition" x-text="g.name"></button>
                         </template>
                     </div>
                 </div>
                 
-                <div class="space-y-1 mt-10">
-                    <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-4 border-b border-zinc-900 pb-2">Active Board</h3>
+                <div class="space-y-1 mt-8">
+                    <h3 class="text-[10px] font-black text-zinc-600 uppercase mb-4 border-b border-zinc-900 pb-2">Active Board</h3>
                     <template x-for="s in queue" :key="s.id">
                         <div :class="{'type-car': s.type === 'car', 'type-bus': s.type === 'bus', 'type-group': s.type === 'group'}" class="queue-item dispatch-grid">
-                            <span class="text-lg font-black opacity-30" x-text="s.grade || '-'"></span>
-                            <span class="text-2xl font-black" x-text="s.tag"></span>
-                            <span class="text-2xl font-black italic uppercase" x-text="s.name"></span>
+                            <span class="text-xs font-black opacity-30" x-text="s.grade || '-'"></span>
+                            <span class="text-lg font-black" x-text="s.tag"></span>
+                            <span class="text-lg font-black italic uppercase truncate" x-text="s.name"></span>
                             <button @click="removeFromQueue(s.id)" class="text-2xl text-red-500 font-black">×</button>
                         </div>
                     </template>
                 </div>
             </div>
 
-            <div x-show="view === 'admin'" class="p-8">
+            <div x-show="view === 'admin'" class="p-4 md:p-8">
                 <div class="flex gap-8 mb-8 border-b border-zinc-900">
                     <button @click="adminTab = 'roster'" :class="adminTab === 'roster' ? 'text-[#FFD700] border-b-2 border-[#FFD700]' : 'text-zinc-600'" class="pb-4 font-black uppercase text-xs">Roster</button>
                     <button @click="adminTab = 'groups'" :class="adminTab === 'groups' ? 'text-[#FFD700] border-b-2 border-[#FFD700]' : 'text-zinc-600'" class="pb-4 font-black uppercase text-xs">Groups</button>
                 </div>
 
-                <div x-show="adminTab === 'roster'" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div x-show="adminTab === 'roster'" class="flex flex-col md:grid md:grid-cols-3 gap-8">
                     <div class="bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800 h-fit">
-                        <input x-model="rosterForm.name" type="text" placeholder="NAME" class="w-full bg-black border border-zinc-800 p-4 rounded-xl font-black text-white uppercase mb-4">
+                        <input x-model="rosterForm.name" type="text" placeholder="NAME" class="w-full bg-black border border-zinc-800 p-4 rounded-xl font-black text-white uppercase mb-4 outline-none">
                         <div class="grid grid-cols-2 gap-4 mb-4">
-                            <input x-model="rosterForm.tag" type="text" placeholder="TAG" class="w-full bg-black border border-zinc-800 p-4 rounded-xl font-black text-[#FFD700]">
-                            <select x-model="rosterForm.grade" class="bg-black border border-zinc-800 p-4 rounded-xl font-black text-white uppercase">
-                                <template x-for="g in ['K','1','2','3','4','5','6','7','8']"><option :value="g" x-text="'Grade ' + g"></option></template>
+                            <input x-model="rosterForm.tag" type="text" placeholder="TAG" class="w-full bg-black border border-zinc-800 p-4 rounded-xl font-black text-[#FFD700] outline-none">
+                            <select x-model="rosterForm.grade" class="bg-black border border-zinc-800 p-4 rounded-xl font-black text-white uppercase outline-none">
+                                <template x-for="g in ['K','1','2','3','4','5','6','7','8']"><option :value="g" x-text="'Grade '+g"></option></template>
                             </select>
                         </div>
                         <button @click="isEditing ? forceUpdate() : addToRoster()" class="w-full bg-[#FFD700] text-black font-black p-4 rounded-xl uppercase text-xs" x-text="isEditing ? 'Save' : 'Enroll'"></button>
                     </div>
-                    <div class="lg:col-span-2">
-                        <input x-model="searchQuery" type="text" placeholder="SEARCH..." class="w-full bg-black border border-zinc-800 p-4 rounded-xl font-black text-xs text-[#FFD700] uppercase mb-4">
+                    <div class="md:col-span-2">
+                        <input x-model="searchQuery" type="text" placeholder="SEARCH ROSTER..." class="w-full bg-black border border-zinc-800 p-4 rounded-xl font-black text-xs text-[#FFD700] uppercase mb-4 outline-none">
                         <template x-for="s in filteredRoster" :key="s.id">
                             <div @click="editStudent(s)" class="bg-zinc-900/30 p-2 rounded-lg border border-zinc-800 flex justify-between items-center mb-1 hover:border-[#FFD700] cursor-pointer">
-                                <div class="flex items-center gap-6"><span class="text-zinc-600 font-black text-[10px] w-4" x-text="s.grade"></span><span class="text-[#FFD700] font-black text-xl w-16" x-text="s.tag"></span><span class="font-black uppercase text-sm" x-text="s.name"></span></div>
+                                <div class="flex items-center gap-6"><span class="text-zinc-600 font-black text-[10px] w-4" x-text="s.grade"></span><span class="text-[#FFD700] font-black text-lg w-16" x-text="s.tag"></span><span class="font-black uppercase text-xs" x-text="s.name"></span></div>
                                 <button @click.stop="deleteFromRoster(s.id)" class="text-red-900 text-[9px] font-black">DEL</button>
                             </div>
                         </template>
@@ -168,13 +208,28 @@
                         </div>
                     </template>
                     <div class="bg-zinc-900/20 border-2 border-dashed border-zinc-800 p-6 rounded-2xl">
-                        <input x-model="groupForm.name" type="text" placeholder="UNIT NAME" class="w-full bg-black border border-zinc-800 p-2 rounded mb-2 text-xs font-bold uppercase">
-                        <input x-model="groupForm.tag" type="text" placeholder="TAG/ID" class="w-full bg-black border border-zinc-800 p-2 rounded mb-2 text-xs font-bold uppercase">
+                        <input x-model="groupForm.name" type="text" placeholder="UNIT NAME" class="w-full bg-black border border-zinc-800 p-2 rounded mb-2 text-xs font-bold uppercase outline-none">
+                        <input x-model="groupForm.tag" type="text" placeholder="ID" class="w-full bg-black border border-zinc-800 p-2 rounded mb-2 text-xs font-bold uppercase outline-none">
                         <button @click="addGroup()" class="w-full bg-white text-black font-black py-2 rounded uppercase text-[10px]">Create Unit</button>
                     </div>
                 </div>
             </div>
         </main>
+
+        <nav class="mobile-nav">
+            <button x-show="userRole !== 'teacher'" @click="view = 'dispatch'" class="flex-1 flex flex-col items-center justify-center gap-1" :class="view === 'dispatch' ? 'text-[#FFD700]' : 'text-zinc-600'">
+                <span class="font-black text-[10px] uppercase">Dispatch</span>
+            </button>
+            <button x-show="userRole !== 'dispatch'" @click="view = 'teacher'" class="flex-1 flex flex-col items-center justify-center gap-1" :class="view === 'teacher' ? 'text-[#FFD700]' : 'text-zinc-600'">
+                <span class="font-black text-[10px] uppercase">Projector</span>
+            </button>
+            <button x-show="userRole === 'admin'" @click="view = 'admin'" class="flex-1 flex flex-col items-center justify-center gap-1" :class="view === 'admin' ? 'text-[#FFD700]' : 'text-zinc-600'">
+                <span class="font-black text-[10px] uppercase">Admin</span>
+            </button>
+            <button @click="logout()" class="flex-1 flex flex-col items-center justify-center gap-1 text-zinc-600">
+                <span class="font-black text-[10px] uppercase">Exit</span>
+            </button>
+        </nav>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
