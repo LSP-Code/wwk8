@@ -36,7 +36,6 @@
             position: sticky;
             top: 0;
             z-index: 3000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
         /* --- Dashboard --- */
@@ -47,11 +46,29 @@
         }
 
         header {
-            padding: 20px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px solid var(--primary-yellow);
+            background: #000;
+        }
+
+        .hub-btn {
+            color: var(--primary-yellow);
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 0.75rem;
+            border: 1px solid var(--primary-yellow);
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+
+        .hub-btn:hover {
+            background: var(--primary-yellow);
+            color: #000;
         }
 
         .hero-banner {
@@ -75,7 +92,6 @@
             padding: 40px 25px;
             text-align: center;
             border: 1px solid #252525;
-            position: relative;
         }
 
         .card-icon { font-size: 50px; margin-bottom: 20px; display: block; }
@@ -115,7 +131,7 @@
         }
 
         .back-btn {
-            margin: 45px 20px 20px 20px;
+            margin: 55px 20px 20px 20px;
             background: rgba(255,255,255,0.1);
             border: none;
             color: white;
@@ -153,20 +169,6 @@
             color: var(--primary-yellow);
             text-transform: uppercase;
         }
-
-        .profile-placeholder {
-            width: 150px;
-            height: 150px;
-            background: #222;
-            border: 3px solid var(--primary-yellow);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            font-size: 60px;
-            opacity: 0.5;
-        }
     </style>
 </head>
 <body>
@@ -177,13 +179,13 @@
 
     <div id="dashboard">
         <header>
-            <div style="font-weight: 900; color: var(--primary-yellow);">WWK8 YELLOW JACKETS</div>
-            <div style="font-size: 0.7rem; color: var(--text-gray);">v0.9.6-BETA</div>
+            <a href="https://wwk8.xyz" class="hub-btn">← Back to Hub</a>
+            <div style="font-size: 0.7rem; color: var(--text-gray); font-weight: bold;">v0.9.7-BETA</div>
         </header>
 
         <div class="hero-banner">
-            <h1>ATHLETICS <span style="color:var(--primary-yellow)">HUB</span></h1>
-            <p style="color: var(--text-gray); font-size: 0.8rem; letter-spacing: 2px; margin-top: 5px;">OFFICIAL DEVELOPMENT PORTAL</p>
+            <h1>YELLOW <span style="color:var(--primary-yellow)">JACKETS</span></h1>
+            <p style="color: var(--text-gray); font-size: 0.8rem; letter-spacing: 2px; margin-top: 5px;">ATHLETICS BETA</p>
         </div>
 
         <div class="card-container">
@@ -222,21 +224,14 @@
         <div class="no-data-view">
             <div class="status-badge">SYSTEM STATUS: OFFLINE</div>
             <div class="huge-text">No Live Data</div>
-            <p style="color: var(--text-gray); margin-top: 15px; font-size: 0.9rem;">
-                Live game data will appear here once the testing phase is complete.
-            </p>
         </div>
     </div>
 
     <div id="athlete-page" class="page-overlay">
         <button class="back-btn" onclick="closePage('athlete-page')">← EXIT VIEW</button>
         <div class="no-data-view">
-            <div class="profile-placeholder">👤</div>
             <div class="status-badge">SEASON NOT STARTED</div>
             <div class="huge-text">TBD</div>
-            <p style="color: var(--text-gray); margin-top: 15px; font-size: 0.9rem; max-width: 280px;">
-                Athlete of the Week selections are currently unavailable as the season has not yet started.
-            </p>
         </div>
     </div>
 
@@ -245,9 +240,6 @@
         <div class="no-data-view">
             <div class="status-badge">DATABASE STATUS: EMPTY</div>
             <div class="huge-text">No History Found</div>
-            <p style="color: var(--text-gray); margin-top: 15px; font-size: 0.9rem;">
-                Historical archives are being migrated. No records available.
-            </p>
         </div>
     </div>
 
