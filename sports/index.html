@@ -19,34 +19,25 @@
         body {
             background-color: var(--bg-black);
             color: var(--text-white);
-            overflow: hidden;
-            height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* --- STICKY BETA BANNER --- */
         .beta-header-stripe {
             background: var(--beta-red);
             color: white;
             text-align: center;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 900;
-            padding: 8px;
+            padding: 6px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             position: sticky;
             top: 0;
-            z-index: 3000;
-        }
-
-        /* --- Dashboard --- */
-        #dashboard {
-            height: calc(100vh - 35px);
-            overflow-y: auto;
-            padding-bottom: 60px;
+            z-index: 6000;
         }
 
         header {
-            padding: 15px 20px;
+            padding: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -58,198 +49,226 @@
             color: var(--primary-yellow);
             text-decoration: none;
             font-weight: 800;
-            font-size: 0.75rem;
-            border: 1px solid var(--primary-yellow);
-            padding: 6px 12px;
+            font-size: 0.65rem;
+            border: 1.5px solid var(--primary-yellow);
+            padding: 5px 10px;
             border-radius: 6px;
             text-transform: uppercase;
-            transition: all 0.2s;
         }
 
-        .hub-btn:hover {
-            background: var(--primary-yellow);
-            color: #000;
-        }
-
+        /* --- REDUCED HERO TEXT --- */
         .hero-banner {
             text-align: center;
-            padding: 30px 20px;
+            padding: 30px 10px 20px 10px;
         }
 
-        .hero-banner h1 { font-family: 'Impact', sans-serif; font-size: 2.5rem; letter-spacing: 2px; }
+        .hero-banner h1 { 
+            font-family: 'Impact', sans-serif; 
+            font-size: 2.2rem; /* Reduced from 3.5rem */
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
 
-        /* --- Cards --- */
+        .hero-banner h1 .white { color: white; }
+        .hero-banner h1 .yellow { color: var(--primary-yellow); }
+
+        .hero-subtext {
+            color: var(--text-gray);
+            font-size: 0.7rem; /* Reduced */
+            letter-spacing: 3px;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        /* --- FULL WIDTH CARDS --- */
         .card-container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            padding: 0 20px;
+            gap: 12px;
+            padding: 10px;
+            width: 100%;
         }
 
         .feature-card {
             background: var(--card-dark);
-            border-radius: 24px;
-            padding: 40px 25px;
+            border-radius: 18px;
+            padding: 30px 20px;
             text-align: center;
             border: 1px solid #252525;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
         }
 
-        .card-icon { font-size: 50px; margin-bottom: 20px; display: block; }
-        .card-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 12px; }
-        .card-desc { color: var(--text-gray); font-size: 0.95rem; margin-bottom: 30px; line-height: 1.4; }
+        .feature-card.reveal { opacity: 1; transform: translateY(0); }
+
+        .card-icon { font-size: 32px; margin-bottom: 15px; display: block; }
+        .card-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 8px; }
+        .card-desc { color: var(--text-gray); font-size: 0.85rem; margin-bottom: 20px; line-height: 1.4; }
 
         .btn-yellow {
             background: var(--primary-yellow);
             color: #000;
             border: none;
             width: 100%;
-            padding: 16px;
-            border-radius: 14px;
+            padding: 15px;
+            border-radius: 12px;
             font-weight: 900;
             cursor: pointer;
-            text-transform: capitalize;
-            font-size: 1rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
         }
 
-        /* --- Fullscreen Overlays --- */
+        /* --- OVERLAYS --- */
         .page-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg-black);
-            z-index: 2000;
+            z-index: 5000;
             display: none;
-            flex-direction: column;
-            animation: slideUp 0.3s ease-out;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
+        .page-overlay.active { display: flex; opacity: 1; }
+
+        .hazard-bg {
+            background: repeating-linear-gradient(45deg, #000, #000 40px, var(--primary-yellow) 40px, var(--primary-yellow) 80px);
+            height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center;
+            animation: slideBG 20s linear infinite;
         }
 
-        .back-btn {
-            margin: 55px 20px 20px 20px;
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-weight: bold;
-            cursor: pointer;
-            align-self: flex-start;
-        }
+        @keyframes slideBG { from { background-position: 0 0; } to { background-position: 500px 0; } }
 
-        .no-data-view {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        .exit-bar {
+            width: 90%;
+            background: rgba(0,0,0,0.9);
+            padding: 15px;
+            margin-top: 50px;
+            border-radius: 50px;
             text-align: center;
-            padding: 40px;
-        }
-
-        .status-badge {
-            border: 1px solid var(--text-gray);
-            color: var(--text-gray);
-            padding: 4px 12px;
-            border-radius: 4px;
+            color: white;
+            font-weight: 900;
+            text-transform: uppercase;
             font-size: 0.7rem;
-            margin-bottom: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
+            border: 1.5px solid #333;
         }
 
-        .huge-text {
-            font-family: 'Impact', sans-serif;
-            font-size: 2.2rem;
-            color: var(--primary-yellow);
-            text-transform: uppercase;
+        .status-box {
+            background: #000;
+            padding: 30px 20px;
+            border-radius: 20px;
+            border: 2px dashed #444;
+            text-align: center;
+            margin: auto;
+            max-width: 85%;
         }
+
+        .status-box .emoji { font-size: 40px; margin-bottom: 10px; display: block; }
+        .status-box h2 { font-family: 'Impact'; font-size: 2rem; color: white; }
+        .status-box p { color: var(--text-gray); font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
-    <div class="beta-header-stripe">
-        ⚠️ Site in Development: Beta Testing Phase
-    </div>
+    <div class="beta-header-stripe">⚠️ Site in Development</div>
+
+    <header>
+        <a href="https://wwk8.xyz" class="hub-btn">← Back to Hub</a>
+        <div style="color: var(--text-gray); font-size: 0.65rem; font-weight: bold;">v1.0.1-BETA</div>
+    </header>
 
     <div id="dashboard">
-        <header>
-            <a href="https://wwk8.xyz" class="hub-btn">← Back to Hub</a>
-            <div style="font-size: 0.7rem; color: var(--text-gray); font-weight: bold;">v0.9.7-BETA</div>
-        </header>
-
         <div class="hero-banner">
-            <h1>YELLOW <span style="color:var(--primary-yellow)">JACKETS</span></h1>
-            <p style="color: var(--text-gray); font-size: 0.8rem; letter-spacing: 2px; margin-top: 5px;">ATHLETICS BETA</p>
+            <h1><span class="white">YELLOW</span> <span class="yellow">JACKETS</span></h1>
+            <div class="hero-subtext">ATHLETICS BETA</div>
         </div>
 
         <div class="card-container">
             <div class="feature-card">
                 <span class="card-icon">🎯</span>
                 <div class="card-title">Live Scoreboard</div>
-                <div class="card-desc">Real-time data feeds are currently disconnected for maintenance.</div>
+                <div class="card-desc">Real-time data feeds are currently disconnected.</div>
                 <button class="btn-yellow" onclick="openPage('score-page')">Enter Scoreboard</button>
             </div>
 
             <div class="feature-card">
                 <span class="card-icon">⭐</span>
                 <div class="card-title">Athlete of the Week</div>
-                <div class="card-desc">TBD: Nominations will begin once the athletic season officially starts.</div>
+                <div class="card-desc">TBD: Nominations start with the season.</div>
                 <button class="btn-yellow" onclick="openPage('athlete-page')">View Athlete</button>
             </div>
 
             <div class="feature-card">
                 <span class="card-icon">🎟️</span>
                 <div class="card-title">Purchase Tickets</div>
-                <div class="card-desc">The official box office portal link is ready for final verification.</div>
+                <div class="card-desc">Official box office portal verification.</div>
                 <button class="btn-yellow" onclick="window.open('https://events.hometownticketing.com/boxoffice/hernandoschools/entity/schools/24')">Box Office Test</button>
             </div>
 
             <div class="feature-card">
                 <span class="card-icon">📊</span>
                 <div class="card-title">Season History</div>
-                <div class="card-desc">Previous records are currently being cleared and indexed.</div>
+                <div class="card-desc">Previous records are currently being indexed.</div>
                 <button class="btn-yellow" onclick="openPage('history-page')">Check Records</button>
             </div>
         </div>
     </div>
 
     <div id="score-page" class="page-overlay">
-        <button class="back-btn" onclick="closePage('score-page')">← EXIT VIEW</button>
-        <div class="no-data-view">
-            <div class="status-badge">SYSTEM STATUS: OFFLINE</div>
-            <div class="huge-text">No Live Data</div>
+        <div class="hazard-bg">
+            <button class="exit-bar" onclick="closePage('score-page')">← EXIT VIEW</button>
+            <div class="status-box">
+                <span class="emoji">🎯</span>
+                <h2>NO LIVE DATA</h2>
+                <p>Season Has Not Started</p>
+            </div>
         </div>
     </div>
 
-    <div id="athlete-page" class="page-overlay">
-        <button class="back-btn" onclick="closePage('athlete-page')">← EXIT VIEW</button>
-        <div class="no-data-view">
-            <div class="status-badge">SEASON NOT STARTED</div>
-            <div class="huge-text">TBD</div>
+    <div id="athlete-page" class="page-overlay" style="background: #000;">
+        <div style="height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <button class="exit-bar" onclick="closePage('athlete-page')">← EXIT VIEW</button>
+            <div class="status-box">
+                <span class="emoji">👤</span>
+                <h2 style="color:var(--primary-yellow)">TBD</h2>
+                <p>Nominations Pending</p>
+            </div>
         </div>
     </div>
 
-    <div id="history-page" class="page-overlay">
-        <button class="back-btn" onclick="closePage('history-page')">← EXIT VIEW</button>
-        <div class="no-data-view">
-            <div class="status-badge">DATABASE STATUS: EMPTY</div>
-            <div class="huge-text">No History Found</div>
+    <div id="history-page" class="page-overlay" style="background: #000;">
+        <div style="height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center;">
+            <button class="exit-bar" onclick="closePage('history-page')">← EXIT VIEW</button>
+            <div class="status-box">
+                <span class="emoji">📊</span>
+                <h2>NO RECORDS</h2>
+                <p>Indexing in Progress</p>
+            </div>
         </div>
     </div>
 
     <script>
+        window.addEventListener('load', () => {
+            const cards = document.querySelectorAll('.feature-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => { card.classList.add('reveal'); }, 100 * (index + 1));
+            });
+        });
+
         function openPage(id) {
-            document.getElementById(id).style.display = 'flex';
+            const el = document.getElementById(id);
+            el.style.display = 'flex';
+            setTimeout(() => el.classList.add('active'), 10);
         }
 
         function closePage(id) {
-            document.getElementById(id).style.display = 'none';
+            const el = document.getElementById(id);
+            el.classList.remove('active');
+            setTimeout(() => el.style.display = 'none', 300);
         }
     </script>
 </body>
