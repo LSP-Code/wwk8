@@ -15,12 +15,31 @@
             --text-dim: #a1a1aa;
         }
 
+        /* --- Animations --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0px rgba(255, 204, 0, 0); }
+            50% { box-shadow: 0 0 20px rgba(255, 204, 0, 0.15); }
+            100% { box-shadow: 0 0 0px rgba(255, 204, 0, 0); }
+        }
+
         body {
             margin: 0;
             background-color: var(--bg);
             color: var(--text);
             font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .hero-bg {
@@ -30,21 +49,20 @@
             z-index: -1;
         }
 
-        /* Centered Navigation */
         nav {
             padding: 40px 5% 0;
             display: flex;
             justify-content: center;
-            align-items: center;
+            animation: fadeInUp 0.8s ease backwards;
         }
 
         .logo { font-weight: 800; font-size: 1.5rem; letter-spacing: -1px; }
         .logo span { color: var(--primary); }
 
-        /* Centered Header */
         .welcome-area {
             padding: 40px 20px 60px;
             text-align: center;
+            animation: fadeInUp 0.8s ease 0.2s backwards;
         }
 
         .welcome-area h1 { 
@@ -52,26 +70,21 @@
             font-weight: 800; 
             margin: 0; 
             letter-spacing: -2px;
+            background: linear-gradient(to bottom, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .welcome-area p { color: var(--text-dim); margin-top: 10px; font-size: 1.1rem; }
-
-        /* 4-Card Grid Layout */
         .app-grid {
-            max-width: 1400px; /* Increased to fit 4 cards nicely */
+            max-width: 1400px;
             margin: 0 auto 100px;
             padding: 0 25px;
             display: grid;
-            /* Creates 4 columns if space allows, otherwise wraps */
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
             gap: 20px;
         }
 
-        @media (min-width: 1200px) {
-            .app-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
+        @media (min-width: 1200px) { .app-grid { grid-template-columns: repeat(4, 1fr); } }
 
         .app-card {
             background: var(--glass);
@@ -83,19 +96,35 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1), border-color 0.3s;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: fadeInUp 0.8s ease backwards;
         }
+
+        /* Delay each card for staggered entrance */
+        .app-card:nth-child(1) { animation-delay: 0.3s; }
+        .app-card:nth-child(2) { animation-delay: 0.4s; }
+        .app-card:nth-child(3) { animation-delay: 0.5s; }
+        .app-card:nth-child(4) { animation-delay: 0.6s; }
+        .app-card:nth-child(5) { animation-delay: 0.7s; }
+        .app-card:nth-child(6) { animation-delay: 0.8s; }
+        .app-card:nth-child(7) { animation-delay: 0.9s; }
 
         .app-card:hover:not(.locked) {
-            transform: translateY(-8px);
+            transform: translateY(-12px) scale(1.02);
             border-color: var(--primary);
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
-        .icon-box { font-size: 3.5rem; margin-bottom: 15px; }
+        .featured-card {
+            border-color: rgba(255, 204, 0, 0.3);
+            animation: fadeInUp 0.8s ease 0.3s backwards, pulseGlow 3s infinite ease-in-out;
+        }
+
+        .icon-box { font-size: 3.5rem; margin-bottom: 15px; transition: transform 0.3s ease; }
+        .app-card:hover .icon-box { transform: scale(1.1) rotate(5deg); }
         
         h3 { font-size: 1.3rem; font-weight: 800; margin: 10px 0; letter-spacing: -0.5px; }
-        
         p.desc { color: var(--text-dim); font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px; }
 
         .launch-btn {
@@ -108,30 +137,25 @@
             font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            transition: 0.2s;
+            transition: all 0.3s ease;
             border: 2px solid var(--primary);
         }
 
         .launch-btn:hover {
             background-color: transparent;
             color: var(--primary);
+            box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
         }
 
-        /* Locked / Coming Soon Styling */
         .app-card.locked {
-            opacity: 0.3;
+            opacity: 0.25;
             filter: grayscale(1);
             cursor: not-allowed;
             pointer-events: none;
+            transform: scale(0.95);
         }
 
-        .app-card.locked .launch-btn {
-            background: transparent;
-            border-color: var(--glass-border);
-            color: var(--text-dim);
-        }
-
-        footer { text-align: center; padding: 40px; color: var(--text-dim); font-size: 0.8rem; }
+        footer { text-align: center; padding: 40px; color: var(--text-dim); font-size: 0.8rem; animation: fadeInUp 1s ease 1s backwards; }
 
         @media (max-width: 600px) { .app-grid { grid-template-columns: 1fr; } }
     </style>
@@ -151,7 +175,7 @@
 
     <main class="app-grid">
         
-        <div class="app-card" style="border-color: rgba(255, 204, 0, 0.3);">
+        <div class="app-card featured-card">
             <div>
                 <div class="icon-box">🕒</div>
                 <h3>Schedule Tracker</h3>
