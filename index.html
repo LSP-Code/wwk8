@@ -21,12 +21,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-
         @keyframes pulseGlow {
             0% { box-shadow: 0 0 0px rgba(255, 204, 0, 0); }
             50% { box-shadow: 0 0 20px rgba(255, 204, 0, 0.15); }
@@ -98,16 +92,10 @@
             justify-content: space-between;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             animation: fadeInUp 0.8s ease backwards;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
         }
-
-        /* Delay each card for staggered entrance */
-        .app-card:nth-child(1) { animation-delay: 0.3s; }
-        .app-card:nth-child(2) { animation-delay: 0.4s; }
-        .app-card:nth-child(3) { animation-delay: 0.5s; }
-        .app-card:nth-child(4) { animation-delay: 0.6s; }
-        .app-card:nth-child(5) { animation-delay: 0.7s; }
-        .app-card:nth-child(6) { animation-delay: 0.8s; }
-        .app-card:nth-child(7) { animation-delay: 0.9s; }
 
         .app-card:hover:not(.locked) {
             transform: translateY(-12px) scale(1.02);
@@ -139,9 +127,10 @@
             letter-spacing: 1px;
             transition: all 0.3s ease;
             border: 2px solid var(--primary);
+            display: block;
         }
 
-        .launch-btn:hover {
+        .app-card:hover .launch-btn {
             background-color: transparent;
             color: var(--primary);
             box-shadow: 0 0 15px rgba(255, 204, 0, 0.4);
@@ -175,50 +164,59 @@
 
     <main class="app-grid">
         
-        <div class="app-card featured-card">
+        <a href="https://wwk8.xyz/schedule" class="app-card featured-card">
             <div>
                 <div class="icon-box">🕒</div>
                 <h3>Schedule Tracker</h3>
                 <p class="desc">Track the school live schedule and class times.</p>
             </div>
-            <a href="https://wwk8.xyz/schedule" class="launch-btn">Open Tracker</a>
-        </div>
+            <span class="launch-btn">Open Tracker</span>
+        </a>
 
-        <div class="app-card">
+        <a href="https://wwk8.xyz/links" class="app-card">
             <div>
                 <div class="icon-box">🔗</div>
                 <h3>Student Links</h3>
                 <p class="desc">Quick access to Canvas, Skyward, and resources.</p>
             </div>
-            <a href="https://wwk8.xyz/links" class="launch-btn">Go to Links</a>
-        </div>
+            <span class="launch-btn">Go to Links</span>
+        </a>
 
-        <div class="app-card">
+        <a href="https://wwk8.xyz/calendar" class="app-card">
             <div>
                 <div class="icon-box">📅</div>
                 <h3>Campus Calendar</h3>
                 <p class="desc">The official Winding Waters school calendar.</p>
             </div>
-            <a href="https://wwk8.xyz/calendar" class="launch-btn">Full Calendar</a>
-        </div>
+            <span class="launch-btn">Full Calendar</span>
+        </a>
 
-        <div class="app-card">
+        <a href="https://wwk8.xyz/events" class="app-card">
             <div>
                 <div class="icon-box">📣</div>
                 <h3>WWK8 Events</h3>
                 <p class="desc">Spirit weeks, club meetings, and dances.</p>
             </div>
-            <a href="https://wwk8.xyz/events" class="launch-btn">See Events</a>
-        </div>
+            <span class="launch-btn">See Events</span>
+        </a>
 
-        <div class="app-card">
+        <a href="https://wwk8.xyz/sports" class="app-card">
             <div>
                 <div class="icon-box">🏀</div>
                 <h3>WWK8 Athletics</h3>
                 <p class="desc">Game schedules, locations, and live scores.</p>
             </div>
-            <a href="https://wwk8.xyz/sports" class="launch-btn">Game Times</a>
-        </div>
+            <span class="launch-btn">Game Times</span>
+        </a>
+
+        <a href="https://wwk8.xyz/ffea" class="app-card">
+            <div>
+                <div class="icon-box">🍎</div>
+                <h3>FFEA</h3>
+                <p class="desc">Florida Future Educators of America portal.</p>
+            </div>
+            <span class="launch-btn">Access Portal</span>
+        </a>
 
         <div class="app-card locked">
             <div>
@@ -226,7 +224,7 @@
                 <h3>Sting Fest</h3>
                 <p class="desc">Check requirements for the next big event.</p>
             </div>
-            <a href="#" class="launch-btn">Locked</a>
+            <span class="launch-btn">Locked</span>
         </div>
 
         <div class="app-card locked">
@@ -235,7 +233,7 @@
                 <h3>What's for Lunch?</h3>
                 <p class="desc">Daily cafeteria menu and nutrition info.</p>
             </div>
-            <a href="#" class="launch-btn">Coming Soon</a>
+            <span class="launch-btn">Coming Soon</span>
         </div>
 
     </main>
