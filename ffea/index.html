@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FFEA Budget Pro + AI Advisor</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --inc: #2ecc71; --exp: #e74c3c; --primary: #3498db; --ai: #8e44ad; --dark: #2c3e50; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        
+        /* Account Header */
+        .header-card { background: var(--dark); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 25px; position: relative; overflow: hidden; }
+        .header-card::after { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%); pointer-events: none; }
+        .balance-label { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; }
+        .balance-amount { font-size: 3.5rem; font-weight: 800; margin: 10px 0; display: block; }
+
+        /* Navigation */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee; }
+        .tab-btn { padding: 15px 30px; border: none; background: #eee; cursor: pointer; border-radius: 12px 12px 0 0; font-weight: bold; font-size: 1rem; transition: 0.3s; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        .tab-btn.ai-active { background: var(--ai); color: white; }
+
+        .main-content { display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px; min-height: 500px; }
+        .display-pane { background: #fafafa; border-radius: 15px; padding: 25px; border: 1px solid #eee; text-align: center; }
+        
+        /* AI Insights Styling */
+        .ai-box { text-align: left; padding: 20px; background: #fdfaff; border-left: 6px solid var(--ai); border-radius: 12px; margin-top: 15px; min-height: 250px; }
+        .ai-error-tip { font-size: 0.85rem; color: #666; margin-top: 15px; padding: 10px; background: #fff1f1; border-radius: 8px; border: 1px solid #ffcaca; }
+
+        /* Form Elements */
+        .input-row { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { padding: 14px; border: 2px solid #ddd; border-radius: 10px; flex: 1; font-size: 1rem; outline: none; transition: 0.2s; }
+        input:focus { border-color: var(--primary); }
+        .data-scroll { max-height: 350px; overflow-y: auto; background: white; border: 1px solid #eee; border-radius: 12px; padding: 5px; }
+        .item-row { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #f5f5f5; align-items: center; }
+        
+        /* Global Buttons */
+        button { cursor: pointer; border: none; border-radius: 10px; font-weight: 700; transition: 0.2s; }
+        button:active { transform: scale(0.97); }
+        .btn-add { background: var(--primary); color: white; padding: 0 25px; }
+        .btn-ai { background: var(--ai); color: white; width: 100%; padding: 18px; margin-top: 10px; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(142, 68, 173, 0.3); }
+        .btn-save { background: var(--inc); color: white; width: 100%; padding: 15px; margin-top: 10px; }
+        .btn-print { background: var(--dark); color: white; width: 100%; padding: 15px; margin-top: 10px; }
+        .btn-del { background: #ff7675; color: white; padding: 6px 12px; font-size: 0.8rem; }
+
+        /* PRINT RENDERING */
+        #printContainer { display: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #printContainer, #printContainer * { visibility: visible; }
+            #printContainer { display: block !important; position: absolute; left: 0; top: 0; width: 100%; background: white; padding: 30px; }
+            .p-flex { display: flex; justify-content: space-between; gap: 40px; margin-top: 30px; }
+            .p-chart-box { width: 48%; text-align: center; }
+            .p-img { width: 100%; max-height: 280px; object-fit: contain; }
+            .p-bal-box { font-size: 32px; font-weight: 800; text-align: center; border: 3px solid #000; padding: 20px; margin: 30px 0; }
+            .p-list-item { display: flex; justify-content: space-between; border-bottom: 1px solid #ccc; padding: 8px 0; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-card">
+        <span class="balance-label">Verified Club Balance</span>
+        <span class="balance-amount" id="totalBalance">$0.00</span>
+        <div id="cloudStatus" style="font-size: 0.8rem; opacity: 0.6;">System Synced</div>
+    </div>
+
+    <div class="tabs">
+        <button id="tabExp" class="tab-btn active" onclick="changeTab('expense')">Expenses</button>
+        <button id="tabInc" class="tab-btn" onclick="changeTab('income')">Income</button>
+        <button id="tabAi" class="tab-btn" onclick="changeTab('ai')">✨ AI Advisor</button>
+    </div>
+
+    <div class="main-content">
+        <div class="display-pane">
+            <h3 id="paneHeader">Expense Analysis</h3>
+            <canvas id="budgetChart"></canvas>
+            <div id="aiContainer" style="display:none;">
+                <div class="ai-box" id="aiText">
+                    Click the button to receive a personalized financial audit from the AI.
+                </div>
+                <div class="ai-error-tip" id="securityTip" style="display:none;">
+                    <b>💡 Troubleshooting:</b> If AI fails, it's likely browser security. To fix this, host your file on Firebase or use a "Live Server" extension.
+                </div>
+            </div>
+        </div>
+
+        <div class="entry-pane">
+            <div class="input-row">
+                <input type="text" id="nameIn" placeholder="Description">
+                <input type="number" id="amtIn" placeholder="$0.00">
+                <button class="btn-add" onclick="pushData()">Add</button>
+            </div>
+            <div id="uiList" class="data-scroll"></div>
+            
+            <button class="btn-ai" onclick="invokeAI()">Analyze with AI Advisor</button>
+            <button class="btn-save" onclick="uploadData()">Cloud Save</button>
+            <button class="btn-print" onclick="triggerPrint()">Print Report</button>
+        </div>
+    </div>
+</div>
+
+<div id="printContainer">
+    <h1 style="text-align:center; text-transform:uppercase; letter-spacing:2px;">FFEA Official Financial Audit</h1>
+    <div class="p-bal-box" id="pBalValue"></div>
+    
+    <div class="p-flex">
+        <div class="p-chart-box">
+            <h3 style="color:var(--inc); border-bottom:2px solid var(--inc);">Income Streams</h3>
+            <img id="pImgInc" class="p-img">
+            <div id="pListInc" style="margin-top:15px;"></div>
+        </div>
+        <div class="p-chart-box">
+            <h3 style="color:var(--exp); border-bottom:2px solid var(--exp);">Expense Allocation</h3>
+            <img id="pImgExp" class="p-img">
+            <div id="pListExp" style="margin-top:15px;"></div>
+        </div>
+    </div>
+    
+    <div style="margin-top:50px; padding:25px; background:#f4f4f4; border-radius:15px; border-left:8px solid var(--ai);">
+        <h3 style="margin-top:0;">✨ AI Financial Recommendation:</h3>
+        <p id="pAiContent" style="font-size:1.1rem; line-height:1.6;"></p>
+    </div>
+
+    <canvas id="hiddenCanvasInc" style="display:none;" width="400" height="400"></canvas>
+    <canvas id="hiddenCanvasExp" style="display:none;" width="400" height="400"></canvas>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAWa-nAJtPdgp_brYGmWKINDzwOy8kGxho",
+      authDomain: "ffea-budget.firebaseapp.com",
+      projectId: "ffea-budget",
+      storageBucket: "ffea-budget.firebasestorage.app",
+      messagingSenderId: "944480162878",
+      appId: "1:944480162878:web:0e57fb30f9c1a4218c6d6f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const KEY = "AIzaSyAqmrFhvG76EPJaEzHU-B8khDAG8lNdyYw";
+
+    let logs = [];
+    let activeTab = 'expense';
+    let myChart;
+    let aiReport = "No advice generated yet.";
+
+    window.addEventListener('DOMContentLoaded', async () => {
+        const ctx = document.getElementById('budgetChart').getContext('2d');
+        myChart = new Chart(ctx, {
+            type: 'pie',
+            data: { labels: [], datasets: [{ data: [], backgroundColor: ['#3498db', '#9b59b6', '#f1c40f', '#e67e22', '#e74c3c', '#2ecc71'] }] },
+            options: { animation: false }
+        });
+
+        const snap = await getDoc(doc(db, "budgets", "main_v2"));
+        if (snap.exists()) { logs = snap.data().items || []; syncUI(); }
+    });
+
+    window.changeTab = (t) => {
+        activeTab = t;
+        document.getElementById('tabExp').className = `tab-btn ${t === 'expense' ? 'active' : ''}`;
+        document.getElementById('tabInc').className = `tab-btn ${t === 'income' ? 'active' : ''}`;
+        document.getElementById('tabAi').className = `tab-btn ${t === 'ai' ? 'ai-active' : ''}`;
+        
+        document.getElementById('budgetChart').style.display = (t === 'ai') ? 'none' : 'block';
+        document.getElementById('aiContainer').style.display = (t === 'ai') ? 'block' : 'none';
+        document.getElementById('paneHeader').innerText = (t === 'ai') ? 'AI Advisor' : (t === 'income' ? 'Income' : 'Expenses');
+        
+        syncUI();
+    };
+
+    window.pushData = () => {
+        const n = document.getElementById('nameIn').value;
+        const a = parseFloat(document.getElementById('amtIn').value);
+        if (n && !isNaN(a)) {
+            logs.push({ id: Date.now(), name: n, amt: a, type: activeTab });
+            document.getElementById('nameIn').value = ''; 
+            document.getElementById('amtIn').value = '';
+            syncUI();
+        }
+    };
+
+    window.popData = (id) => {
+        logs = logs.filter(i => i.id !== id);
+        syncUI();
+    };
+
+    function syncUI() {
+        const list = document.getElementById('uiList');
+        list.innerHTML = '';
+        const filtered = logs.filter(i => i.type === activeTab);
+        
+        let iTotal = 0; let eTotal = 0;
+        logs.forEach(l => { if(l.type === 'income') iTotal += l.amt; else eTotal += l.amt; });
+        
+        const bal = iTotal - eTotal;
+        document.getElementById('totalBalance').innerText = `$${bal.toLocaleString()}`;
+        document.getElementById('totalBalance').style.color = (bal >= 0) ? '#2ecc71' : '#ff7675';
+
+        filtered.forEach(item => {
+            list.innerHTML += `<div class="item-row"><span>${item.name}: <b>$${item.amt}</b></span><button class="btn-del" onclick="popData(${item.id})">Delete</button></div>`;
+        });
+
+        if (activeTab !== 'ai') {
+            myChart.data.labels = filtered.map(i => i.name);
+            myChart.data.datasets[0].data = filtered.map(i => i.amt);
+            myChart.update();
+        }
+    }
+
+    window.invokeAI = async () => {
+        changeTab('ai');
+        const box = document.getElementById('aiText');
+        const tip = document.getElementById('securityTip');
+        box.innerHTML = "<i>AI Advisor is calculating risks and opportunities...</i>";
+        tip.style.display = "none";
+
+        const summary = logs.length > 0 ? 
+            logs.map(i => `${i.type}: ${i.name} ($${i.amt})`).join(", ") : "Empty budget.";
+        
+        const msg = `Student club treasurer report. Items: ${summary}. Balance: ${document.getElementById('totalBalance').innerText}. Provide 3 sharp, professional tips.`;
+
+        try {
+            const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ contents: [{ parts: [{ text: msg }] }] })
+            });
+            
+            if (!r.ok) throw new Error("CORS Blocked");
+            
+            const d = await r.json();
+            aiReport = d.candidates[0].content.parts[0].text;
+            box.innerText = aiReport;
+        } catch (e) { 
+            aiReport = "OFFLINE/RESTRICTED MODE: \n1. Maintain a 10% safety margin. \n2. Diversify fundraising sources. \n3. Audit largest expense categories monthly.";
+            box.innerText = aiReport;
+            tip.style.display = "block";
+        }
+    };
+
+    window.uploadData = async () => {
+        document.getElementById('cloudStatus').innerText = "Uploading...";
+        try { 
+            await setDoc(doc(db, "budgets", "main_v2"), { items: logs }); 
+            document.getElementById('cloudStatus').innerText = "Cloud Sync Active ✅"; 
+        } catch (e) { document.getElementById('cloudStatus').innerText = "Sync Error ❌"; }
+    };
+
+    window.triggerPrint = () => {
+        document.getElementById('pBalValue').innerText = "Net Balance: " + document.getElementById('totalBalance').innerText;
+        document.getElementById('pAiContent').innerText = aiReport;
+
+        const snap = (cId, iId, items) => {
+            const c = document.getElementById(cId);
+            const tc = new Chart(c.getContext('2d'), {
+                type: 'pie',
+                data: { labels: items.map(i=>i.name), datasets:[{data: items.map(i=>i.amt), backgroundColor:['#2ecc71', '#3498db', '#f1c40f', '#e67e22', '#e74c3c', '#2ecc71']}] },
+                options: { animation: false, responsive: false }
+            });
+            setTimeout(() => { document.getElementById(iId).src = c.toDataURL(); tc.destroy(); }, 200);
+        };
+
+        const inItems = logs.filter(i=>i.type==='income');
+        const exItems = logs.filter(i=>i.type==='expense');
+
+        snap('hiddenCanvasInc', 'pImgInc', inItems);
+        snap('hiddenCanvasExp', 'pImgExp', exItems);
+        
+        document.getElementById('pListInc').innerHTML = inItems.map(i=>`<div class="p-list-item"><span>${i.name}</span><span>$${i.amt}</span></div>`).join('');
+        document.getElementById('pListExp').innerHTML = exItems.map(i=>`<div class="p-list-item"><span>${i.name}</span><span>$${i.amt}</span></div>`).join('');
+
+        setTimeout(() => { window.print(); }, 1200);
+    };
+</script>
+</body>
+</html>
