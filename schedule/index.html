@@ -23,13 +23,40 @@
         .stroke-1 { top: -10%; left: -10%; width: 60vw; height: 50vh; }
         .stroke-2 { bottom: -10%; right: -10%; width: 60vw; height: 50vh; }
 
+        /* Global Hub Button (Dashboard) */
+        .global-hub-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .hub-btn {
+            background: transparent;
+            color: var(--accent-yellow);
+            border: 1px solid var(--accent-yellow);
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: 0.3s;
+            display: inline-block;
+        }
+
+        .hub-btn:hover {
+            background: var(--accent-yellow);
+            color: #000;
+        }
+
         /* --- DASHBOARD VIEW --- */
         #dashboard-view {
             position: relative;
             z-index: 10;
             width: 90%;
             max-width: 550px;
-            margin: 5vh auto;
+            margin: 8vh auto;
             background: var(--glass-bg);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
@@ -121,30 +148,31 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 10px;
-            z-index: 110; /* Ensures button is on top */
+            gap: 12px;
+            z-index: 110;
         }
 
         #hall-date { font-size: 1.2rem; opacity: 0.7; font-weight: 400; }
         #hall-clock { font-size: 3rem; font-weight: 900; color: var(--accent-yellow); line-height: 1; }
 
+        .btn-row { display: flex; gap: 10px; margin-top: 5px; }
+
         .exit-btn { 
             background: rgba(255,255,255,0.1); 
             color: white; 
             border: 1px solid white; 
-            padding: 10px 24px; 
+            padding: 8px 18px; 
             border-radius: 8px; 
             cursor: pointer; 
-            font-size: 0.8rem; 
+            font-size: 0.7rem; 
             font-weight: 900; 
             text-transform: uppercase;
             transition: 0.2s;
-            pointer-events: auto; /* Makes sure it responds to clicks */
         }
         .exit-btn:hover { background: white; color: black; }
 
-        /* Login & UI */
-        #login-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 500; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
+        /* Login & UI Controls */
+        #login-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
         .login-box { background: #1a1a1a; padding: 3rem; border-radius: 30px; border: 1px solid var(--accent-yellow); text-align: center; width: 320px; }
         input { background: #2a2a2a; border: 1px solid #444; color: white; padding: 15px; border-radius: 12px; font-size: 1.5rem; width: 100%; text-align: center; margin: 20px 0; outline: none; }
         
@@ -162,6 +190,10 @@
 
     <div class="brush-stroke stroke-1"></div>
     <div class="brush-stroke stroke-2"></div>
+
+    <div class="global-hub-container" id="dash-hub-link">
+        <a href="https://wwk8.xyz" class="hub-btn">Back to Hub</a>
+    </div>
 
     <div id="login-modal">
         <div class="login-box">
@@ -209,7 +241,10 @@
         <div class="hallway-top-right">
             <div id="hall-date">Sunday, Jan 25, 2026</div>
             <div id="hall-clock">00:00:00 AM</div>
-            <button class="exit-btn" id="manual-exit" onclick="toggleHallway(false)">Exit Display</button>
+            <div class="btn-row">
+                <a href="https://wwk8.xyz" class="hub-btn">Back to Hub</a>
+                <button class="exit-btn" onclick="toggleHallway(false)">Exit Display</button>
+            </div>
         </div>
 
         <div class="hallway-sidebar">
@@ -282,17 +317,19 @@
             update();
         }
 
-        /** FIXED TOGGLE FUNCTION **/
         function toggleHallway(show) {
             const hallway = document.getElementById('hallway-view');
             const dashboard = document.getElementById('dashboard-view');
+            const hubContainer = document.getElementById('dash-hub-link');
             
             if (show) {
                 hallway.style.display = 'grid';
                 dashboard.style.display = 'none';
+                hubContainer.style.display = 'none'; // Hub button is inside hallway view separately
             } else {
                 hallway.style.display = 'none';
                 dashboard.style.display = 'block';
+                hubContainer.style.display = 'block';
             }
         }
 
