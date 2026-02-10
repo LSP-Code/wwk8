@@ -14,261 +14,228 @@
             --beta-red: #d32f2f;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-black); color: var(--text-white); overflow-x: hidden; }
 
-        body {
-            background-color: var(--bg-black);
-            color: var(--text-white);
-            overflow-x: hidden;
-        }
-
+        /* Beta Header */
         .beta-header-stripe {
-            background: var(--beta-red);
-            color: white;
-            text-align: center;
-            font-size: 0.7rem;
-            font-weight: 900;
-            padding: 6px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: sticky;
-            top: 0;
-            z-index: 6000;
+            background: var(--beta-red); color: white; text-align: center; font-size: 0.7rem;
+            font-weight: 700; padding: 6px; text-transform: uppercase; position: sticky; top: 0; z-index: 6000;
         }
 
         header {
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--primary-yellow);
-            background: #000;
+            padding: 15px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--primary-yellow); background: #000;
         }
 
         .hub-btn {
-            color: var(--primary-yellow);
-            text-decoration: none;
-            font-weight: 800;
-            font-size: 0.65rem;
-            border: 1.5px solid var(--primary-yellow);
-            padding: 5px 10px;
-            border-radius: 6px;
-            text-transform: uppercase;
+            color: var(--primary-yellow); text-decoration: none; font-weight: 600; font-size: 0.65rem;
+            border: 1.5px solid var(--primary-yellow); padding: 5px 10px; border-radius: 6px; text-transform: uppercase;
+            background: transparent; cursor: pointer;
         }
 
-        /* --- REDUCED HERO TEXT --- */
-        .hero-banner {
-            text-align: center;
-            padding: 30px 10px 20px 10px;
-        }
-
-        .hero-banner h1 { 
-            font-family: 'Impact', sans-serif; 
-            font-size: 2.2rem; /* Reduced from 3.5rem */
-            text-transform: uppercase;
-            line-height: 1.1;
-        }
-
-        .hero-banner h1 .white { color: white; }
+        .hero-banner { display: flex; align-items: center; justify-content: space-between; padding: 30px 15px; }
+        .hero-logo { width: 85px; height: auto; }
+        .hero-text { text-align: right; }
+        .hero-banner h1 { font-family: 'Impact', sans-serif; font-size: 1.9rem; text-transform: uppercase; }
         .hero-banner h1 .yellow { color: var(--primary-yellow); }
 
-        .hero-subtext {
-            color: var(--text-gray);
-            font-size: 0.7rem; /* Reduced */
-            letter-spacing: 3px;
-            margin-top: 5px;
-            text-transform: uppercase;
-        }
-
-        /* --- FULL WIDTH CARDS --- */
-        .card-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            padding: 10px;
-            width: 100%;
-        }
-
+        /* Dashboard Cards */
+        .card-container { display: flex; flex-direction: column; gap: 12px; padding: 10px; }
         .feature-card {
-            background: var(--card-dark);
-            border-radius: 18px;
-            padding: 30px 20px;
-            text-align: center;
-            border: 1px solid #252525;
-            width: 100%;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease-out;
+            background: var(--card-dark); padding: 30px 20px; text-align: center; border-radius: 12px;
+            border: 1px solid #222;
         }
-
-        .feature-card.reveal { opacity: 1; transform: translateY(0); }
-
-        .card-icon { font-size: 32px; margin-bottom: 15px; display: block; }
-        .card-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 8px; }
-        .card-desc { color: var(--text-gray); font-size: 0.85rem; margin-bottom: 20px; line-height: 1.4; }
 
         .btn-yellow {
-            background: var(--primary-yellow);
-            color: #000;
-            border: none;
-            width: 100%;
-            padding: 15px;
-            border-radius: 12px;
-            font-weight: 900;
-            cursor: pointer;
-            font-size: 0.9rem;
-            text-transform: uppercase;
+            background: var(--primary-yellow); color: #000; border: none; width: 100%; max-width: 300px;
+            padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; text-transform: uppercase;
         }
 
-        /* --- OVERLAYS --- */
+        /* Overlays */
         .page-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 5000;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 5000;
+            display: none; background: #000; overflow-y: auto; flex-direction: column;
         }
-
-        .page-overlay.active { display: flex; opacity: 1; }
-
-        .hazard-bg {
-            background: repeating-linear-gradient(45deg, #000, #000 40px, var(--primary-yellow) 40px, var(--primary-yellow) 80px);
-            height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center;
-            animation: slideBG 20s linear infinite;
-        }
-
-        @keyframes slideBG { from { background-position: 0 0; } to { background-position: 500px 0; } }
+        .page-overlay.active { display: flex; }
 
         .exit-bar {
-            width: 90%;
-            background: rgba(0,0,0,0.9);
-            padding: 15px;
-            margin-top: 50px;
-            border-radius: 50px;
-            text-align: center;
-            color: white;
-            font-weight: 900;
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            border: 1.5px solid #333;
+            width: 100%; background: #000; padding: 20px; text-align: center; color: white;
+            font-weight: 600; cursor: pointer; border-bottom: 1px solid #333;
         }
 
-        .status-box {
-            background: #000;
-            padding: 30px 20px;
-            border-radius: 20px;
-            border: 2px dashed #444;
-            text-align: center;
-            margin: auto;
-            max-width: 85%;
+        /* Scoreboard Display */
+        .score-display {
+            background: #111; margin: 20px; padding: 40px 20px; border-radius: 15px; 
+            border: 2px solid var(--primary-yellow); display: flex; justify-content: space-around; align-items: center;
         }
+        .team-box h3 { font-family: 'Impact'; font-size: 1.1rem; color: var(--text-gray); margin-bottom: 5px; }
+        .team-score { font-family: 'Impact'; font-size: 4.5rem; color: var(--primary-yellow); }
 
-        .status-box .emoji { font-size: 40px; margin-bottom: 10px; display: block; }
-        .status-box h2 { font-family: 'Impact'; font-size: 2rem; color: white; }
-        .status-box p { color: var(--text-gray); font-size: 0.85rem; }
+        /* Admin Controls */
+        #admin-panel { display: none; padding: 20px; background: #1a1a1a; margin: 20px; border-radius: 12px; }
+        .admin-input {
+            width: 100%; padding: 12px; margin-bottom: 10px; background: #000; border: 1px solid #444;
+            color: white; border-radius: 6px;
+        }
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+
+        /* Athlete Grid */
+        .athlete-section { padding: 20px; }
+        .athlete-grid { display: flex; flex-direction: column; gap: 15px; }
+        @media (min-width: 900px) { .athlete-grid { flex-direction: row; } .athlete-profile { flex: 1; } }
+        .athlete-profile { border: 1px solid #222; border-radius: 5px; overflow: hidden; }
+        .athlete-img { width: 100%; height: auto; display: block; }
     </style>
 </head>
 <body>
 
-    <div class="beta-header-stripe">⚠️ Site in Development</div>
+    <div class="beta-header-stripe">⚠️ Live Realtime Database v1.8.0</div>
 
     <header>
-        <a href="https://wwk8.xyz" class="hub-btn">← Back to Hub</a>
-        <div style="color: var(--text-gray); font-size: 0.65rem; font-weight: bold;">v1.0.1-BETA</div>
+        <button class="hub-btn" onclick="location.href='https://wwk8.xyz'">← Back to Hub</button>
+        <div style="color: var(--text-gray); font-size: 0.65rem;">FIREBASE CONNECTED</div>
     </header>
 
     <div id="dashboard">
         <div class="hero-banner">
-            <h1><span class="white">YELLOW</span> <span class="yellow">JACKETS</span></h1>
-            <div class="hero-subtext">ATHLETICS BETA</div>
+            <img src="https://i.postimg.cc/7PcYyQqB/wwk8-bee-removebg-preview.png" alt="WWK8 Bee" class="hero-logo">
+            <div class="hero-text">
+                <h1>YELLOW <span class="yellow">JACKETS</span></h1>
+                <p style="font-size: 0.6rem; color: var(--text-gray); letter-spacing: 2px;">OFFICIAL ATHLETICS</p>
+            </div>
         </div>
 
         <div class="card-container">
             <div class="feature-card">
-                <span class="card-icon">🎯</span>
-                <div class="card-title">Live Scoreboard</div>
-                <div class="card-desc">Real-time data feeds are currently disconnected.</div>
+                <span style="font-size: 35px;">🎯</span>
+                <h2 style="margin: 10px 0;">Live Scoreboard</h2>
                 <button class="btn-yellow" onclick="openPage('score-page')">Enter Scoreboard</button>
             </div>
-
             <div class="feature-card">
-                <span class="card-icon">⭐</span>
-                <div class="card-title">Athlete of the Week</div>
-                <div class="card-desc">TBD: Nominations start with the season.</div>
-                <button class="btn-yellow" onclick="openPage('athlete-page')">View Athlete</button>
-            </div>
-
-            <div class="feature-card">
-                <span class="card-icon">🎟️</span>
-                <div class="card-title">Purchase Tickets</div>
-                <div class="card-desc">Official box office portal verification.</div>
-                <button class="btn-yellow" onclick="window.open('https://events.hometownticketing.com/boxoffice/hernandoschools/entity/schools/24')">Box Office Test</button>
-            </div>
-
-            <div class="feature-card">
-                <span class="card-icon">📊</span>
-                <div class="card-title">Season History</div>
-                <div class="card-desc">Previous records are currently being indexed.</div>
-                <button class="btn-yellow" onclick="openPage('history-page')">Check Records</button>
+                <span style="font-size: 35px;">⭐</span>
+                <h2 style="margin: 10px 0;">Athletes of the Week</h2>
+                <button class="btn-yellow" onclick="openPage('athlete-page')">View Spotlight</button>
             </div>
         </div>
     </div>
 
     <div id="score-page" class="page-overlay">
-        <div class="hazard-bg">
-            <button class="exit-bar" onclick="closePage('score-page')">← EXIT VIEW</button>
-            <div class="status-box">
-                <span class="emoji">🎯</span>
-                <h2>NO LIVE DATA</h2>
-                <p>Season Has Not Started</p>
+        <div class="exit-bar" onclick="closePage('score-page')">← EXIT SCOREBOARD</div>
+        
+        <div class="score-display">
+            <div class="team-box">
+                <h3 id="display-team1">HOME</h3>
+                <div class="team-score" id="score1">0</div>
+            </div>
+            <div style="font-family: Impact; font-size: 1.5rem; color: #333;">VS</div>
+            <div class="team-box">
+                <h3 id="display-team2">AWAY</h3>
+                <div class="team-score" id="score2">0</div>
+            </div>
+        </div>
+
+        <div id="login-section" style="text-align: center;">
+            <button class="hub-btn" onclick="adminLogin()">Admin Login</button>
+        </div>
+
+        <div id="admin-panel">
+            <h3 style="color: var(--primary-yellow); margin-bottom: 15px; font-size: 0.9rem;">SCORE CONTROLLER</h3>
+            <input type="text" id="input-team1" class="admin-input" placeholder="Update Home Name">
+            <input type="text" id="input-team2" class="admin-input" placeholder="Update Away Name">
+            
+            <div class="control-grid">
+                <button class="hub-btn" onclick="updateCloudScore('score1', 1)">Home +1</button>
+                <button class="hub-btn" onclick="updateCloudScore('score2', 1)">Away +1</button>
+                <button class="hub-btn" onclick="updateCloudScore('score1', -1)">Home -1</button>
+                <button class="hub-btn" onclick="updateCloudScore('score2', -1)">Away -1</button>
+            </div>
+            <button class="btn-yellow" style="width: 100%;" onclick="updateCloudTeams()">Save Team Names</button>
+            <button class="hub-btn" style="width: 100%; margin-top: 10px; border-color: #444; color: #666;" onclick="resetGame()">Reset Game</button>
+        </div>
+    </div>
+
+    <div id="athlete-page" class="page-overlay">
+        <div class="exit-bar" onclick="closePage('athlete-page')">← EXIT VIEW</div>
+        <div class="athlete-section">
+            <h2 style="font-family: Impact; text-align: center; color: var(--primary-yellow); padding: 20px 0;">ATHLETES OF THE WEEK</h2>
+            <div class="athlete-grid">
+                <div class="athlete-profile"><img src="https://i.postimg.cc/Nf49Pw82/Screenshot-2026-02-02-214938.png" class="athlete-img"></div>
+                <div class="athlete-profile"><img src="https://i.postimg.cc/05GbbqBc/Screenshot-2026-02-02-215034.png" class="athlete-img"></div>
+                <div class="athlete-profile"><img src="https://i.postimg.cc/rshTxgWk/Screenshot-2026-02-02-215148.png" class="athlete-img"></div>
+                <div class="athlete-profile"><img src="https://i.postimg.cc/Gh2ddwws/Screenshot-2026-02-02-215236.png" class="athlete-img"></div>
             </div>
         </div>
     </div>
 
-    <div id="athlete-page" class="page-overlay" style="background: #000;">
-        <div style="height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center;">
-            <button class="exit-bar" onclick="closePage('athlete-page')">← EXIT VIEW</button>
-            <div class="status-box">
-                <span class="emoji">👤</span>
-                <h2 style="color:var(--primary-yellow)">TBD</h2>
-                <p>Nominations Pending</p>
-            </div>
-        </div>
-    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
-    <div id="history-page" class="page-overlay" style="background: #000;">
-        <div style="height: 100%; width: 100%; display: flex; flex-direction: column; align-items: center;">
-            <button class="exit-bar" onclick="closePage('history-page')">← EXIT VIEW</button>
-            <div class="status-box">
-                <span class="emoji">📊</span>
-                <h2>NO RECORDS</h2>
-                <p>Indexing in Progress</p>
-            </div>
-        </div>
-    </div>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCISqLqwN15lQrkqA5Y22ksUmeA_EbCQDU",
+            authDomain: "wwk8-hub.firebaseapp.com",
+            projectId: "wwk8-hub",
+            storageBucket: "wwk8-hub.firebasestorage.app",
+            messagingSenderId: "1043084731775",
+            appId: "1:1043084731775:web:a1627ee4533db0d940664a"
+        };
 
-    <script>
-        window.addEventListener('load', () => {
-            const cards = document.querySelectorAll('.feature-card');
-            cards.forEach((card, index) => {
-                setTimeout(() => { card.classList.add('reveal'); }, 100 * (index + 1));
-            });
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const gameRef = ref(db, 'liveScore');
+
+        // Listen for cloud changes (updates automatically for all users)
+        onValue(gameRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                document.getElementById('score1').innerText = data.score1 || 0;
+                document.getElementById('score2').innerText = data.score2 || 0;
+                document.getElementById('display-team1').innerText = data.team1 || "HOME";
+                document.getElementById('display-team2').innerText = data.team2 || "AWAY";
+                
+                // Keep local variables in sync for the admin
+                window.currentScore1 = data.score1 || 0;
+                window.currentScore2 = data.score2 || 0;
+            }
         });
 
-        function openPage(id) {
-            const el = document.getElementById(id);
-            el.style.display = 'flex';
-            setTimeout(() => el.classList.add('active'), 10);
-        }
+        // Cloud Update Functions
+        window.updateCloudScore = (team, amount) => {
+            const updates = {};
+            if (team === 'score1') updates['/score1'] = Math.max(0, window.currentScore1 + amount);
+            else updates['/score2'] = Math.max(0, window.currentScore2 + amount);
+            update(gameRef, updates);
+        };
 
-        function closePage(id) {
-            const el = document.getElementById(id);
-            el.classList.remove('active');
-            setTimeout(() => el.style.display = 'none', 300);
+        window.updateCloudTeams = () => {
+            const t1 = document.getElementById('input-team1').value;
+            const t2 = document.getElementById('input-team2').value;
+            const updates = {};
+            if (t1) updates['/team1'] = t1.toUpperCase();
+            if (t2) updates['/team2'] = t2.toUpperCase();
+            update(gameRef, updates);
+        };
+
+        window.resetGame = () => {
+            if(confirm("Are you sure you want to reset the scoreboard?")) {
+                set(gameRef, { score1: 0, score2: 0, team1: "HOME", team2: "AWAY" });
+            }
+        };
+    </script>
+
+    <script>
+        function openPage(id) { document.getElementById(id).classList.add('active'); }
+        function closePage(id) { document.getElementById(id).classList.remove('active'); }
+
+        function adminLogin() {
+            const pass = prompt("Enter Access Code:");
+            if (pass === "889900") {
+                document.getElementById('admin-panel').style.display = 'block';
+                document.getElementById('login-section').style.display = 'none';
+            } else {
+                alert("Unauthorized.");
+            }
         }
     </script>
 </body>
